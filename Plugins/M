@@ -1,0 +1,50 @@
+const { cmd } = require('../command');
+
+cmd({
+    pattern: "gcstatus",
+    desc: "Lava MD: Saare groups ki profile status ring par apna link lagayein.",
+    category: "owner",
+    react: "🟢",
+    filename: __filename
+},
+async (conn, mek, m, { reply, text, isCreator }) => {
+    try {
+        // Jo bhi banda bot chalaye (Owner), sirf wahi use kar sake
+        if (!isCreator) return reply("*Lava MD System:* Oye bhai, ye command sirf bot owner hi chala sakta hai! ❌");
+        if (!text) return reply("*Masla hai boss!* ⚠️ Jo link saare groups ke status par lagana hai, wo sath mein likho.\n\n*Example:* `.gcstatus https://chat.whatsapp.com/ENB1TdIY27H...`");
+
+        await reply("*Lava MD Action Mein!* 🦁 Saare groups ki profile ring (status) par aapka link lagaya ja raha hai, thoda sabar karo...");
+
+        // Saare participating groups ki list nikalna jahan number add hai
+        const groups = Object.keys(await conn.groupFetchAllParticipating());
+        if (groups.length === 0) return reply("*Bhai, koi group nahi mila jisme aap add ho!* 🤷‍♂️");
+
+        let successCount = 0;
+
+        for (let gcId of groups) {
+            try {
+                // WhatsApp Group Story/Status update karne ka exact internal configuration
+                await conn.sendMessage(gcId, {
+                    text: text
+                }, {
+                    backgroundColor: '#7A7E13', // Screenshot_20260703-095308_WhatsApp.jpg jaisa background color
+                    font: 3,
+                    broadcast: true, // Chat bypass karke status stream mein bhejta hai
+                    statusJidList: [gcId] // Target group ki profile ring
+                });
+
+                successCount++;
+                // 1.5 second ka delay taaki number safe rahe aur ban na ho
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
+            } catch (err) {
+                console.log(`Error on group ring ${gcId}: `, err);
+            }
+        }
+
+        return await reply(`*Kaam Done, Boss!* 🔥\n\nTotal *${successCount}* groups di profile status ring te aapka link chupke se lag gaya hai! Chat box mein koi message nahi gaya aur number ban hone ka bhi koi khatra nahi hai! 😎`);
+
+    } catch (e) {
+        console.log(e);
+        reply("*Oh ho bhai, status ring par lagane mein koi takneeki masla aa gaya hai!* ❌");
+    }
+});
