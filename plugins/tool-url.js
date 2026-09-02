@@ -1,8 +1,8 @@
-// Bandaeali The Destroyer
+// Tagger MD - Uguu to Catbox Uploader
+
 const { cmd, commands } = require('../command');
-const fs = require('fs');
-const path = require('path');
-const ImageKit = require('imagekit');
+const axios = require('axios');
+const FormData = require('form-data');
 
 function formatBytes(bytes) {
   if (bytes === 0) return '0 Bytes';
@@ -14,23 +14,22 @@ function formatBytes(bytes) {
 
 cmd({
   pattern: "url",
-  alias: ["uploade", "tourl", "imgkit", "ikup"],
+  alias: ["uploade", "tourl", "ikup"],
   react: '🖇',
-  desc: "Convert media to URL (via ImageKit)",
+  desc: "Convert media to URL (via Uguu & Catbox)",
   category: "utility",
   use: ".tourl [reply to media]",
   filename: __filename
 }, async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
   try {
-    const quotedMsg = m.quoted ? m.quoted : m;
+    const quotedMsg = quoted ? quoted : m;
     const mimeType = quotedMsg.mimetype || 
                      (quotedMsg.msg && quotedMsg.msg.mimetype) || 
                      (quotedMsg.message && quotedMsg.message[quotedMsg.mtype] && quotedMsg.message[quotedMsg.mtype].mimetype) || 
-                     (quotedMsg.message && Object.values(quotedMsg.message)[0] && Object.values(quotedMsg.message)[0].mimetype) || 
                      '';
     
     if (!mimeType) {
-      throw "Please reply to an image, video, audio, or other supported file";
+      return reply("❌ Please reply to an image, video, audio, or any supported file!");
     }
 
     const mediaBuffer = await quotedMsg.download();
@@ -53,31 +52,57 @@ cmd({
     else if (mimeType.includes('text/')) extension = '.txt';
     else extension = '.bin';
     
-    const fileName = `SHABAN-${Date.now()}${extension}`;
-    const tempFile = path.join(__dirname, fileName);
-    fs.writeFileSync(tempFile, mediaBuffer);
+    const fileName = `tagger-${Date.now()}${extension}`;
 
-    // 🔑 ImageKit setup
-    const imagekit = new ImageKit({ 
-      publicKey: "public_hVzpRbg4Hm2WRdS8x8lZz+TmAUk=",
-      privateKey: "private_IMDgbBU8xJkuqY/1X5/2RhwiiTY=",
-      urlEndpoint: "https://ik.imagekit.io/kfyseccyf"
+    // STEP 1: Upload to Uguu
+    const form = new FormData();
+    form.append('files[]', Buffer.from(mediaBuffer), {
+      filename: fileName,
+      contentType: mimeType || 'application/octet-stream'
     });
 
-    // 🚀 Upload to ImageKit
-    const uploadResponse = await imagekit.upload({
-      file: fs.readFileSync(tempFile),
-      fileName: fileName
+    const uguuResponse = await axios.post("https://uguu.se/upload", form, {
+      headers: {
+        ...form.getHeaders(),
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+      },
+      timeout: 60000
     });
-
-    if (fs.existsSync(tempFile)) {
-      fs.unlinkSync(tempFile); // remove temp file
+    
+    let uguuUrl = null;
+    if (uguuResponse.data) {
+      if (typeof uguuResponse.data === 'string') {
+        try {
+          const parsed = JSON.parse(uguuResponse.data);
+          uguuUrl = parsed.files?.[0]?.url;
+        } catch (e) {}
+      } else if (uguuResponse.data.files && uguuResponse.data.files[0]) {
+        uguuUrl = uguuResponse.data.files[0].url;
+      }
+    }
+    
+    if (!uguuUrl) {
+      return reply("❌ Uguu upload failed - no URL returned.");
     }
 
-    const imageUrl = uploadResponse.url;
+    // STEP 2: Upload to Catbox via URL method
+    const catboxForm = new FormData();
+    catboxForm.append('reqtype', 'urlupload');
+    catboxForm.append('userhash', '');
+    catboxForm.append('url', uguuUrl);
+
+    const catboxResponse = await axios.post("https://catbox.moe/user/api.php", catboxForm, {
+      headers: {
+        ...catboxForm.getHeaders(),
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+      },
+      timeout: 60000
+    });
+
+    const catboxUrl = typeof catboxResponse.data === 'string' ? catboxResponse.data.trim() : '';
     
-    if (!imageUrl) {
-      throw "Upload failed - no URL returned";
+    if (!catboxUrl || !catboxUrl.startsWith('https://')) {
+      return reply(`❌ Catbox rejected the URL. Response: ${catboxUrl || 'empty'}`);
     }
 
     const fileSize = formatBytes(mediaBuffer.length);
@@ -92,12 +117,13 @@ cmd({
     await reply(
       `*${mediaType} Uploaded Successfully*\n\n` +
       `*Size:* ${fileSize}\n` +
-      `*URL:* ${imageUrl}\n\n` +
-      `> © Uploaded by TIGER-MD💜` 
+      `*URL:* ${catboxUrl}\n\n` +
+      `> © Uploaded by Tagger MD`
     );
 
-  } catch (error) { 
+  } catch (error) {
     console.error(error);
-    await reply(`❌ Error: ${error.message || error}`);
+    const errMessage = error.response?.data || error.message || error;
+    await reply(`❌ Error: ${typeof errMessage === 'object' ? JSON.stringify(errMessage) : errMessage}`);
   }
 });
