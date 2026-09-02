@@ -279,7 +279,7 @@ cmd({
         
         await react('✅');
         
-        await reply(`> *LOVE-MD PAIRING CODE*
+        await reply(`> *TIGER-MD PAIRING CODE*
 
 *Your pairing code is:* ${pairingCode}`);
 
