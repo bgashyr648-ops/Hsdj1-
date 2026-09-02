@@ -160,7 +160,7 @@ cmd({
         await conn.sendMessage(from, {
             video: { url: videoUrl },
             mimetype: 'video/mp4',
-            caption: `> Powered by TAGGER-MD | Owner: Bagga Sher MD ✅`
+            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`
         }, { quoted: mek });
 
         const randomText = tiktokMessages[Math.floor(Math.random() * tiktokMessages.length)];
@@ -196,7 +196,7 @@ cmd({
         await conn.sendMessage(from, {
             video: { url: videoUrl },
             mimetype: 'video/mp4',
-            caption: `> Powered by TAGGER-MD | Owner: Bagga Sher MD ✅`
+            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`
         }, { quoted: mek });
 
         const randomText = tiktokMessages[Math.floor(Math.random() * tiktokMessages.length)];
