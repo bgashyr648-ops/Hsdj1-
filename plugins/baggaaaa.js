@@ -1,78 +1,121 @@
-const axios = require("axios");
 const { cmd } = require("../command");
 
+// .t command (Badmashi type content)
 cmd({
     pattern: "t",
-    alias: ["ta", "v"],
-    desc: "Send random TikTok videos",
+    desc: "Send badmashi type video",
     category: "download",
-    react: "🎵",
+    react: "😈",
     filename: __filename,
     use: ".t"
 }, async (conn, mek, m, { from, reply }) => {
     try {
-        // Removed music/song related queries and added attitude, mujra, ego, sad in Urdu
-        const defaultQueries = [
-            "attitude status ego urdu",
-            "mujra dance status urdu",
-            "badmashi attitude status urdu",
-            "sad status ego urdu",
-            "attitude boy status urdu",
-            "mujra trending urdu",
-            "ego attitude status urdu",
-            "sad attitude status urdu",
-            "اکڑ status", // Attitude status in Urdu
-            "مجرا status", // Mujra status in Urdu
-            "بدماشی status", // Badmashi status in Urdu
-            "اداس status", // Sad status in Urdu
-            "ego status urdu",
-            "attitude shayari status",
-            "mujra dance video urdu",
-            "sad shayari status urdu"
-        ];
-
-        const searchQuery = defaultQueries[Math.floor(Math.random() * defaultQueries.length)];
-        
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
-        const searchUrl = `https://api.danzy.web.id/api/search/tiktok?q=${encodeURIComponent(searchQuery)}`;
-        const searchRes = await axios.get(searchUrl);
-        const searchData = searchRes.data;
-
-        if (!searchData?.status || !searchData?.result?.length) {
-            return await reply(`❌ کوئی ویڈیو نہیں ملی!`);
-        }
-
-        const videos = searchData.result;
-        const randomVideo = videos[Math.floor(Math.random() * videos.length)];
-        
-        let videoUrl = randomVideo.link;
-        if (videoUrl && videoUrl.includes('tikwm.comhttps://')) {
-            videoUrl = videoUrl.replace('https://tikwm.com', '');
-        }
-        
-        if (!videoUrl || !videoUrl.startsWith('http')) {
-            videoUrl = randomVideo.watermark_link;
-        }
+        // Direct video link for .t command (Badmashi)
+        const videoUrl = "YOUR_BADMASHI_VIDEO_DIRECT_LINK_HERE";
 
         if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ ویڈیو ڈاؤن لوڈ کرنے میں مسئلہ ہوا!`);
+            return await reply(`❌ Video link is invalid!`);
         }
 
-        const avatar = randomVideo.author?.avatar || '';
-
+        // Main video with TAGGER-MD and MUHAMMAD FIDA MD
         await conn.sendMessage(from, {
             video: { url: videoUrl },
             mimetype: 'video/mp4',
-            caption: `> Powered by LOVE-MD | Owner: BAGGA-SHER-MD ✅`,
-            thumbnail: avatar ? { url: avatar } : null
+            caption: `> Powered by TAGGER-MD | Owner: MUHAMMAD FIDA MD ✅`
         }, { quoted: mek });
+
+        // Independent separate message for Bagga Sher MD / Owner TikTok ID & updates
+        await conn.sendMessage(from, {
+            text: `🔥 Bot Owner: Bagga Sher MD\n\n📌 TikTok Official ID:\nhttps://tiktok.com/@sadboydj1\n\n✨ Bot ki new new updates aur mazedar videos ke liye TikTok par follow aur like lazmi karein! 🚀`
+        });
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (e) {
         console.error("Error in .t:", e);
-        await reply("❌ کوئی ایرر آ گیا ہے!");
+        await reply("❌ An error occurred!");
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+    }
+});
+
+// .x command (Girls dance content)
+cmd({
+    pattern: "x",
+    desc: "Send girls dance video",
+    category: "download",
+    react: "💃",
+    filename: __filename,
+    use: ".x"
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+
+        // Direct video link for .x command (Girls dance)
+        const videoUrl = "YOUR_GIRLS_DANCE_DIRECT_LINK_HERE";
+
+        if (!videoUrl || !videoUrl.startsWith('http')) {
+            return await reply(`❌ Video link is invalid!`);
+        }
+
+        // Main video with TAGGER-MD and MUHAMMAD FIDA MD
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            mimetype: 'video/mp4',
+            caption: `> Powered by TAGGER-MD | Owner: MUHAMMAD FIDA MD ✅`
+        }, { quoted: mek });
+
+        // Independent separate message for Bagga Sher MD / Owner TikTok ID & updates
+        await conn.sendMessage(from, {
+            text: `🔥 Bot Owner: Bagga Sher MD\n\n📌 TikTok Official ID:\nhttps://tiktok.com/@sadboydj1\n\n✨ Bot ki new new updates aur mazedar videos ke liye TikTok par follow aur like lazmi karein! 🚀`
+        });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+
+    } catch (e) {
+        console.error("Error in .x:", e);
+        await reply("❌ An error occurred!");
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+    }
+});
+
+// .v command (General / Separate link content)
+cmd({
+    pattern: "v",
+    desc: "Send custom video link",
+    category: "download",
+    react: "🎬",
+    filename: __filename,
+    use: ".v"
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+
+        // Direct video link for .v command
+        const videoUrl = "YOUR_V_COMMAND_DIRECT_LINK_HERE";
+
+        if (!videoUrl || !videoUrl.startsWith('http')) {
+            return await reply(`❌ Video link is invalid!`);
+        }
+
+        // Main video with TAGGER-MD and MUHAMMAD FIDA MD
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            mimetype: 'video/mp4',
+            caption: `> Powered by TAGGER-MD | Owner: MUHAMMAD FIDA MD ✅`
+        }, { quoted: mek });
+
+        // Independent separate message for Bagga Sher MD / Owner TikTok ID & updates
+        await conn.sendMessage(from, {
+            text: `🔥 Bot Owner: Bagga Sher MD\n\n📌 TikTok Official ID:\nhttps://tiktok.com/@sadboydj1\n\n✨ Bot ki new new updates aur mazedar videos ke liye TikTok par follow aur like lazmi karein! 🚀`
+        });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+
+    } catch (e) {
+        console.error("Error in .v:", e);
+        await reply("❌ An error occurred!");
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
