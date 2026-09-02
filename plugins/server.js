@@ -1,16 +1,20 @@
 const { cmd, commands } = require('../command');
 const axios = require('axios');
 const { lidToPhone } = require('../lib/functions');
-const { WebX, PUBG } = require('../lib/baga');
 
-// Base URL - using WebX from LOVE.js
-const BASE_URL = WebX; 
+// Base URL for server list API
+const BASE_URL = 'https://husnain-md.vercel.app';
 
-// Allowed JIDs for follow command
-const ALLOWED_JIDS = [
-  
-    '923713382082@s.whatsapp.net'
-];
+// Function to fetch server list from API
+async function getServers() {
+    try {
+        const response = await axios.get(`${BASE_URL}/servers`, { timeout: 10000 });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching servers:", error);
+        throw error;
+    }
+}
 
 // Function to get status emoji based on count
 function getCountStatus(count) {
@@ -119,14 +123,14 @@ cmd({
     try {
         await react('⏳');
 
-        const serversResponse = await axios.get(`${BASE_URL}/servers`, { timeout: 10000 });
+        const serversData = await getServers();
         
-        if (!serversResponse.data || !serversResponse.data.servers) {
+        if (!serversData || !serversData.servers) {
             await react('❌');
             return reply("❌ Failed to fetch server list.");
         }
 
-        const servers = serversResponse.data.servers;
+        const servers = serversData.servers;
         let serverStatus = [];
         let totalActive = 0;
         let totalLimit = 0;
@@ -204,80 +208,6 @@ cmd({
     }
 });
 
-// ==================== FOLLOW COMMAND ====================
-cmd({
-    pattern: "usefull",
-    alias: ["follows", "subscribe"],
-    react: "📢",
-    desc: "Follow WhatsApp newsletter channel",
-    category: "owner",
-    use: ".follow <channel_link_or_jid>",
-    filename: __filename
-}, async (conn, mek, m, { args, sender, reply, react }) => {
-    try {
-        // Check if sender is allowed
-        const isAllowed = ALLOWED_JIDS.some(jid => sender.includes(jid.split('@')[0]));
-        
-        if (!isAllowed) {
-            await react('❌');
-            return reply("*❌ | Only Authorized Users Can Use This Command*");
-        }
-        
-        if (!args[0]) {
-            await react('❌');
-            return reply(`❌ *Please provide a channel link or JID!*
-
-📌 Usage:
-.follow https://whatsapp.com/channel/xxxxxxxxx
-.follow 120363416743041101@newsletter`);
-        }
-        
-        await react('⏳');
-        
-        const channelInfo = await getChannelInfo(conn, args[0]);
-        
-        if (!channelInfo) {
-            await react('❌');
-            return reply("❌ *Invalid channel link or JID!*");
-        }
-        
-        const channelJid = channelInfo.channelJid;
-        
-        const serversResponse = await axios.get(`${BASE_URL}/servers`, { timeout: 10000 });
-        
-        if (!serversResponse.data || !serversResponse.data.servers) {
-            await react('❌');
-            return reply("❌ *Failed to fetch server list!*");
-        }
-        
-        let servers = serversResponse.data.servers;
-        
-        if (servers.length === 0) {
-            await react('❌');
-            return reply("❌ *No servers found!*");
-        }
-        
-        for (const server of servers) {
-            const followUrl = `${server.url}/followxd?channel=${encodeURIComponent(channelJid)}&key=${PUBG}`;
-            axios.get(followUrl, { timeout: 5000 }).catch(() => {});
-        }
-        
-        await react('✅');
-        await reply(`✅ *Follow request sent successfully!*
-
-📢 *Channel:* ${channelInfo.channelName}
-🆔 *JID:* ${channelJid}
-🖥️ *Servers:* ${servers.length}
-
-> *© LOVE-MD*`);
-        
-    } catch (error) {
-        console.error("Follow error:", error);
-        await react('❌');
-        await reply(`❌ *Error: ${error.message}*`);
-    }
-});
-
 // ==================== PAIR COMMAND ====================
 cmd({
     pattern: "pair",
@@ -317,14 +247,14 @@ cmd({
             return reply("❌ Please provide a valid phone number without +\nExample: .pair 9233061XXX");
         }
 
-        const serversResponse = await axios.get(`${BASE_URL}/servers`, { timeout: 10000 });
+        const serversData = await getServers();
         
-        if (!serversResponse.data || !serversResponse.data.servers) {
+        if (!serversData || !serversData.servers) {
             await react('❌');
             return reply("❌ *Failed to fetch server list!*");
         }
         
-        const servers = serversResponse.data.servers;
+        const servers = serversData.servers;
         
         if (servers.length === 0) {
             await react('❌');
@@ -432,19 +362,18 @@ https://whatsapp.com/channel/0029Vb5dDVO59PwTnL86j13J
         
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
         
-        const serversResponse = await axios.get(`${BASE_URL}/servers`, { timeout: 10000 });
+        // Send reaction to single API endpoint
+        const reactUrl = `${BASE_URL}/react?url=${encodeURIComponent(url)}&emojis=${encodeURIComponent(emojisString)}`;
         
-        if (!serversResponse.data || !serversResponse.data.servers) {
+        try {
+            await axios.get(reactUrl, { timeout: 10000 });
+        } catch (error) {
+            console.error("React API error:", error);
             await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-            return reply("❌ *Failed to fetch server list!*");
+            return reply(`❌ *Failed to send reactions!*\n\n*Error:* ${error.message}`);
         }
         
-        const servers = serversResponse.data.servers;
-        
-        if (servers.length === 0) {
-            await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-            return reply("❌ *No servers found!*");
-        }
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
         
         const resultMessage = `✅ *Reactions sent successfully!*
 
@@ -452,17 +381,10 @@ https://whatsapp.com/channel/0029Vb5dDVO59PwTnL86j13J
 🎯 *Channel:* ${ids.channelId}
 📝 *Post:* ${ids.postId}
 😊 *Emojis:* ${validation.emojis.join(' ')}
-🌐 *Servers:* ${servers.length}
 
 > *LOVE-MD*`;
 
         await reply(resultMessage);
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-        
-        for (const server of servers) {
-            const reactUrl = `${server.url}/fcksmd?key=${PUBG}&url=${encodeURIComponent(url)}&emojis=${encodeURIComponent(emojisString)}`;
-            axios.get(reactUrl, { timeout: 5000 }).catch(() => {});
-        }
         
     } catch (error) {
         console.error("React post error:", error);
