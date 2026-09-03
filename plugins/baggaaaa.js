@@ -34,7 +34,7 @@ const tiktokMessages = [
     `🔥 𝑩𝑶𝑻 𝑶𝑾𝑵𝑬𝑹\n\n🔗 https://tiktok.com/@sadboydj1\n✨ Bagga Sher MD\n\n💖 Follow & Share!`,
 ];
 
-// Direct video links for .t command (Badmashi Type)
+// Direct video links for .t command
 const badmashiVideos = [
     "https://example.com/badmashi1.mp4",
     "https://example.com/badmashi2.mp4",
@@ -57,7 +57,7 @@ const danceVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345458120_ECsA5WR2R.mp4"
 ];
 
-// Direct video links for .v command (Cleaned up duplicates and fixed typo in file name)
+// Direct video links for .v command
 const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354408437_QKoOXHomw.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354392367_ZgAb9o0sY.mp4",
@@ -136,7 +136,7 @@ const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353261604__GGwA6CxY.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353247978_eeg3c06Rz.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353234980_3st8Ce__J.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHAB_AN-1788355452680_Rg0HBLkOQ.mp4"
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788355452680_Rg0HBLkOQ.mp4"
 ];
 
 // .t command (Badmashi type content)
@@ -152,9 +152,8 @@ cmd({
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
         const videoUrl = badmashiVideos[Math.floor(Math.random() * badmashiVideos.length)];
-
         if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
+            return await reply(`❌ Invalid video link!`);
         }
 
         await conn.sendMessage(from, {
@@ -169,8 +168,7 @@ cmd({
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (e) {
-        console.error("Error in .t:", e);
-        await reply("❌ An error occurred!");
+        console.error("Error in .t command:", e);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
@@ -188,9 +186,8 @@ cmd({
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
         const videoUrl = danceVideos[Math.floor(Math.random() * danceVideos.length)];
-
         if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
+            return await reply(`❌ Invalid video link!`);
         }
 
         await conn.sendMessage(from, {
@@ -205,13 +202,12 @@ cmd({
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (e) {
-        console.error("Error in .x:", e);
-        await reply("❌ An error occurred!");
+        console.error("Error in .x command:", e);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
 
-// .v command (General / Separate link content)
+// .v command (Custom videos with error protection)
 cmd({
     pattern: "v",
     desc: "Send custom video link",
@@ -224,9 +220,8 @@ cmd({
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
         const videoUrl = customVideos[Math.floor(Math.random() * customVideos.length)];
-
         if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
+            return await reply(`❌ Invalid video link!`);
         }
 
         await conn.sendMessage(from, {
@@ -241,8 +236,9 @@ cmd({
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (e) {
-        console.error("Error in .v:", e);
-        await reply("❌ An error occurred!");
+        console.error("Error in .v command:", e);
+        // Silent recovery instead of crashing the command handler
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+        await reply(`⚠️ Network busy, please try again!`);
     }
 });
