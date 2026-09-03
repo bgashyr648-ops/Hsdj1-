@@ -8,7 +8,7 @@ const tiktokMessages = [
     `⚠️ 𝗔𝘁𝘁𝗲𝗻𝘁𝗶𝗼𝗻 𝗘𝘃𝗲𝗿𝘆𝗼𝗻𝗲!\n\n👑 𝗢𝘄𝗻𝗲𝗿: Bagga Sher MD\n📱 𝗧𝗶𝗸𝗧𝗼𝗸: https://tiktok.com/@sadboydj1\n\n💯 Bot ki new updates ke liye TikTok par zaroor aayen!`,
     `✨ 𝓡𝓮𝓪𝓵 𝓞𝔀𝓷𝓮𝓻: 𝓑𝓪𝓰𝓰𝓪 𝓢𝓱𝓮𝓻 𝓜𝓓\n\n🌐 𝓣𝓲𝓴𝓣𝓸𝓴 𝓟𝓻𝓸𝓯𝓲𝓵𝓮:\nhttps://tiktok.com/@sadboydj1\n\n🔥 Like, Share & Follow for more amazing features! 🚀`,
     `『 𝑻𝑰𝑲𝑻𝑶𝑲 𝑶𝑭𝑭𝑰𝑪𝑰𝑨𝑳 』\n\n👤 Owner: Bagga Sher MD\n🔗 https://tiktok.com/@sadboydj1\n\n💫 Har nayi update sabse pehle yahan milti hai!`,
-    `💎 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 𝗖𝗛𝗔𝗡𝗡𝗘𝗟\n\n🔹 TikTok: https://tiktok.com/@sadboydj1\n🔹 Owner: Bagga Sher MD\n\n🔥 Sabhi log follow karlo jaldi se!`,
+    `💎 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 𝗖𝗛𝗔𝗡𝗡𝗘𝗟\n\n🔹 TikTok: https://tiktok.com/@sadboydj1\n🔹 Owner: Bagga Sher MD\n\n🔥 Sabhi log follow karlo jaldi से!`,
     `🚀 𝑩𝑶𝑻 𝑼𝑷𝑫𝑨𝑻𝑬𝑺\n\n🔗 https://tiktok.com/@sadboydj1\n⭐ Bagga Sher MD Official ID\n\n💯 Support dikhao dosto!`,
     `👑 𝑲𝑰𝑵𝑮 𝑶𝑭 𝑩𝑶𝑻𝑺\n\n📌 TikTok Profile: https://tiktok.com/@sadboydj1\n✨ Follow karke naye features ki update lo!`,
     `🔥 𝓝𝓮𝔀 𝓥𝓲𝓭𝓮𝓸 𝓐𝓵𝓮𝓻𝓽!\n\n🔗 TikTok: https://tiktok.com/@sadboydj1\n👑 Bagga Sher MD\n\n🚀 Like & Follow for more!`,
@@ -19,7 +19,7 @@ const tiktokMessages = [
     `⚡ 𝑹𝑬𝑨𝑳 𝑶𝑾𝑵𝑬𝑹\n\n🔗 TikTok: https://tiktok.com/@sadboydj1\n👑 Bagga Sher MD\n\n🚀 Follow for daily updates!`,
     `✨ 𝗕𝗔𝗚𝗚𝗔 𝗦𝗛𝗘𝗥 𝗠𝗗\n\n🔗 https://tiktok.com/@sadboydj1\n🔥 TikTok official profile\n\n💫 Sabhi log visit karo!`,
     `👑 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 𝗧𝗜𝗞𝗧𝗢𝗞\n\n🔗 https://tiktok.com/@sadboydj1\n👤 Bagga Sher MD\n\n🚀 New updates ke liye follow karein!`,
-    `🔥 𝑩𝑶𝑻 𝑪𝑹𝑬𝑨𝑻𝑶𝑹\n\n🔗 https://tiktok.com/@sadboydj1\n✨ Bagga Sher MD\n\n💖 Like & Share!`,
+    `🔥 𝑩𝑶𝑻 𝑴𝑹𝑬𝑨𝑻𝑶𝑹\n\n🔗 https://tiktok.com/@sadboydj1\n✨ Bagga Sher MD\n\n💖 Like & Share!`,
     `🌟 𝗧𝗜𝗞𝗧𝗢𝗞 𝗖𝗢𝗡𝗡𝗘𝗖𝗧𝗜𝗢𝗡\n\n🔗 https://tiktok.com/@sadboydj1\n👑 Owner: Bagga Sher MD\n\n🚀 Follow fast!`,
     `💥 𝓡𝓮𝓪𝓵 𝓢𝓾𝓹𝓹𝓸𝓻𝓽\n\n🔗 https://tiktok.com/@sadboydj1\n🔥 Bagga Sher MD\n\n✨ Naye bots ki update yahan milegi!`,
     `⚡ 𝑶𝑭𝑭𝗜𝑪𝗜𝑨𝑳 𝑷𝑨𝑮𝑬\n\n🔗 https://tiktok.com/@sadboydj1\n👑 Bagga Sher MD\n\n🚀 Follow & Like!`,
@@ -43,7 +43,7 @@ const badmashiVideos = [
     "https://example.com/badmashi5.mp4",
 ];
 
-// Direct video links for .x command (Your links added here)
+// Direct video links for .x command
 const danceVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345577316_1GMJ9IeGGX.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345563076_ikry847XZ.mp4",
@@ -57,7 +57,7 @@ const danceVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345458120_ECsA5WR2R.mp4"
 ];
 
-// Direct video links for .v command (Custom Type with your new links added)
+// Direct video links for .v command (Cleaned up duplicates and fixed typo in file name)
 const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354408437_QKoOXHomw.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354392367_ZgAb9o0sY.mp4",
@@ -121,7 +121,7 @@ const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353659340_qE5f4GNEn.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353649517_1aaFrcmWE.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353613301_gNiONaSjF.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHAB_AN-1788353599140_WvGNvd0Gq.mp4",
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353599140_WvGNvd0Gq.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353587389_00QVF4x8a.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353575036_6LT0wJQ6I.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353563425_BLznk3usmg.mp4",
@@ -136,7 +136,7 @@ const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353261604__GGwA6CxY.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353247978_eeg3c06Rz.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353234980_3st8Ce__J.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788355452680_Rg0HBLkOQ.mp4"
+    "https://ik.imagekit.io/kfyseccyf/SHAB_AN-1788355452680_Rg0HBLkOQ.mp4"
 ];
 
 // .t command (Badmashi type content)
