@@ -82,12 +82,12 @@ async function sendVideoSafely(conn, from, mek, videoUrl, caption) {
 }
 
 cmd({
-    pattern: "v",
+    pattern: "x",
     desc: "Send custom video",
     category: "download",
     react: "🎬",
     filename: __filename,
-    use: ".v"
+    use: ".x"
 }, async (conn, mek, m, { from, reply }) => {
     try {
         await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
