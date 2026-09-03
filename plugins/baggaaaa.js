@@ -43,13 +43,13 @@ const danceVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345540342_J9rywNurh.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345528053_d6Z0XAuMq.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345517557_ctjpgrIBP.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345505719_ExvhU5OJh.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345489886_Ycw1s40-e.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345475300_6o77SCN6K.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345458120_ECsA5WR2R.mp4"
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354408437_QKoOXHomw.mp4",
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354392367_ZgAb9o0sY.mp4",
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354377680_vufE9p3pDk.mp4",
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788345489886_Ycw1s40-e.mp4"
 ];
 
-// .v command ke liye bilkul pure aur original custom links list
+// .v command ke liye clean custom links list (एरर वाले लिंक्स हटा दिए गए हैं)
 const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354408437_QKoOXHomw.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354392367_ZgAb9o0sY.mp4",
@@ -70,65 +70,10 @@ const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354182797_ka8DDeFX4U.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354174193_mi1_PwrD9.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354165978_oygaMKGna.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354156157_rn8UlN74Q.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354138931_TWOhm5Q7q.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354118833_hfoYl-KLdm.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354110539_KVn5KKIoQi.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354098211_fgKO0O5Qc.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354086896_Y855Ny-Ja.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354075464_RSfzpdt8M.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354067740_F53qq9KOG.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354052724_jRyLhxPN_.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354044563_nDUHNXMd1.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354037006_0ghMPnn8n.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354026226_SjB44DMid.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354011847_LOEnhkOmo.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354001626_zA9rrah5b.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353993828__Fl2FZAAj.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353986326_iPbUdZqAO.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353977131_75tTe_xkS.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353962039_GCPyJjIJM.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353953697_pF0oYk5-T.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353944380_ulhSGU7Yh.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353935203_3YHSH2X5E.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353926527_hCyTQSK6Y.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353916858_XK7hzIFSD.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353909037_tJlcGzMp1.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353893603_USycUzLDt.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353884718_rfnCaBBPV.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353871857_PhJSLAD2M.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353874852_urUy8xuXT.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353866066_4sQ4ctKsy.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353825543_rasC3CXCqQ.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353816489_omwYW1WSt.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353804488_PaCSBGjQ1.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353764844_CgDqyqMMx.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353754515_nCsaS6R-n.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353735886_4wDDCk-D8U.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353719262_35piVpWv6.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353708412_M2LrTBbz8.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353694525_uV8QbUUqf.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353684497_dIQD3xWzQ.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353671008_Dyvk0OlKsH.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353659340_qE5f4GNEn.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353649517_1aaFrcmWE.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353613301_gNiONaSjF.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353599140_WvGNvd0Gq.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353587389_00QVF4x8a.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353575036_6LT0wJQ6I.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353563425_BLznk3usmg.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353553691_rGh0rAcaX.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353535109_h10G6AfyA.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353522624_zSJc-dnfPC.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353513721_GAkbZXwBN.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353502683_wVqkh9jzy.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353489043_fvlzuouK6.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353477054_yrO25kcS6.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788353455556_oOiRcHN-F.mp4",
-    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788355452680_Rg0HBLkOQ.mp4"
+    "https://ik.imagekit.io/kfyseccyf/SHABAN-1788354156157_rn8UlN74Q.mp4"
 ];
 
-// Safe video sender handler to handle buffer loading without socket crash
+// Safe video sender handler
 async function sendVideoSafely(conn, from, mek, videoUrl, caption) {
     try {
         const response = await axios.get(videoUrl, { 
@@ -182,10 +127,10 @@ cmd({
     }
 });
 
-// .v command with original custom links
+// .v command
 cmd({
     pattern: "v",
-    desc: "Send custom video link",
+    desc: "Send custom video",
     category: "download",
     react: "🎬",
     filename: __filename,
