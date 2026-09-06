@@ -102,7 +102,7 @@ cmd({
     pattern: "gcstatus",
     alias: ["statusgc", "swgc"],
     desc: "Text or Media → ALL groups (Text: pure status | Media: chat + status)",
-    category: "group",
+    category: "owner",
     react: "📢",
     filename: __filename
 }, async (conn, mek, m, { from, text, reply, isCreator }) => {
@@ -114,7 +114,6 @@ cmd({
         const caption = text?.trim() || "";
         
         // ==================== CASE 1: MEDIA (IMAGE/VIDEO/AUDIO) ====================
-        // Send to ALL GROUPS using isGroupStatus: true (appears in chat + status)
         if (quotedMsg && mimeType) {
             if (!mimeType.startsWith('image/') && !mimeType.startsWith('video/') && !mimeType.startsWith('audio/')) {
                 return reply("❌ Unsupported! Reply to image, video, or audio.");
@@ -125,7 +124,6 @@ cmd({
             const mediaBuffer = await quotedMsg.download();
             if (!mediaBuffer) throw new Error("Failed to download media");
             
-            // Get all groups first to show count
             const groups = await conn.groupFetchAllParticipating();
             const totalGroups = Object.keys(groups).length;
             
@@ -149,7 +147,6 @@ cmd({
         }
         
         // ==================== CASE 2: TEXT ONLY ====================
-        // Send to ALL GROUPS using V2 (pure status, no chat message)
         const statusText = caption;
         
         if (!statusText) {
@@ -158,7 +155,6 @@ cmd({
         
         await conn.sendMessage(from, { react: { text: "⏳", key: mek.key } });
         
-        // Get all groups
         const groups = await conn.groupFetchAllParticipating();
         const groupIds = Object.keys(groups);
         const total = groupIds.length;
