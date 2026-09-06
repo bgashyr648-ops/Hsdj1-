@@ -1,11 +1,10 @@
 const { cmd } = require('../command');
-const crypto = require('crypto');
 const { generateWAMessageContent, generateWAMessageFromContent, jidNormalizedUser } = require('@whiskeysockets/baileys');
 
 cmd({
     pattern: "gcstatus",
     alias: ["statusgc", "swgc"],
-    desc: "Broadcast V2 Status to all groups from any chat",
+    desc: "Silent Group Status Broadcast",
     category: "owner",
     react: "📢",
     filename: __filename
@@ -19,7 +18,7 @@ cmd({
         if (!groupIds.length) return reply("❌ No groups found!");
 
         const statusText = text?.trim() || (m.quoted ? m.quoted.text : "");
-        if (!statusText) return reply("❌ Please provide text for the status broadcast!");
+        if (!statusText) return reply("❌ Please provide text or media caption for the status!");
         
         await conn.sendMessage(from, { react: { text: "⏳", key: mek.key } });
         
@@ -29,39 +28,34 @@ cmd({
         for (let i = 0; i < groupIds.length; i++) {
             try {
                 const jid = groupIds[i];
-                const messageSecret = crypto.randomBytes(32);
                 
-                const inside = await generateWAMessageContent({ text: statusText }, { 
-                    upload: conn.waUploadToServer 
-                });
-                
-                const messageStructure = {
-                    groupStatusMessageV2: {
-                        message: {
-                            ...inside,
-                            messageContextInfo: { messageSecret }
-                        }
-                    }
-                };
-                
+                const content = await generateWAMessageContent({ text: statusText }, { upload: conn.waUploadToServer });
                 const botUserJid = jidNormalizedUser(conn.user.id);
-                const msg = generateWAMessageFromContent(jid, messageStructure, { 
-                    userJid: botUserJid 
-                });
                 
-                await conn.relayMessage(jid, msg.message, { 
-                    messageId: msg.key.id 
-                });
+                const fullMessage = generateWAMessageFromContent(jid, {
+                    groupStatusMessageV2: {
+                        message: content
+                    }
+                }, { userJid: botUserJid });
+                
+                await conn.relayMessage(jid, fullMessage.message, { messageId: fullMessage.key.id });
                 
                 success++;
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 400)); // थोड़ा सुरक्षित डिले
             } catch (err) {
                 failed++;
             }
         }
         
         await conn.sendMessage(from, { react: { text: "✅", key: mek.key } });
-        await reply(`🎉 Status V2 Sent! Success: ${success} | Failed: ${failed}`);
+        
+        const responseStyle = `🔥 GC Status Deployed Successfully!\n\n` +
+            `📊 Total Groups Updated: ${success}\n` +
+            `❌ Failed: ${failed}\n\n` +
+            `⚡ Owner: *Bagga Sher MD*\n` +
+            `💬 _"Tu sade level da hi nahi hai!"_`;
+            
+        await reply(responseStyle);
         
     } catch (error) {
         console.error("Error:", error);
