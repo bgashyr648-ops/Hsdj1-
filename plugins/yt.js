@@ -182,7 +182,7 @@ cmd({
                     if (videoUrl) {
                         await conn.sendMessage(from, {
                             video: { url: videoUrl },
-                            caption: `🎬 *${vid.title}*\n\n> Powered by LOVE-MD`
+                            caption: `🎬 *${vid.title}*\n\n> Powered by TlGER-MD`
                         }, { quoted: mek });
                         success = true;
                         break;
