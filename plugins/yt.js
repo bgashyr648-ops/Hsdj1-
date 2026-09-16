@@ -242,18 +242,21 @@ cmd({
 
         if (!vid) return reply("❌ No results found!");
 
-        const caption = `*╭┈───〔 ${toSmallCaps('YT Downloader')} 〕┈───⊷*
-*├▢ 🎬 Title:* ${vid.title}
-*├▢ 📺 Channel:* ${vid.author?.name || 'Unknown'}
-*├▢ ⏰ Duration:* ${vid.timestamp}
-*├▢ 👀 Views:* ${vid.views?.toLocaleString() || 'N/A'}
-*╰───────────────────⊷*
-*╭───⬡ ${toSmallCaps('Select Format')} ⬡───*
-*┋ ⬡ 1* 🎧 ${toSmallCaps('Audio (MP3)')}
-*┋ ⬡ 2* 📹 ${toSmallCaps('Video (MP4)')}
-*╰───────────────────⊷*
-
-> Powered by TlGER-MD`;
+        const caption = `☠️═════════════════════☠️
+║  ⚡ 𝕯𝕬𝕹𝕬𝕲𝕰𝕽𝕺𝖀𝕾 𝕿𝖑𝕲𝕰𝕽-𝕸𝕯 ⚡
+☠️═════════════════════☠️
+║ 🏴‍☠️ 𝕿𝖎𝖙𝖑𝖊 ➛ ${vid.title}
+║ 👑 𝕮𝖍𝖆𝖓𝖓𝖊𝖑 ➛ ${vid.author?.name || 'Unknown'}
+║ ⏳ 𝕯𝖚𝖗𝖆𝖙𝖎𝖔𝖓 ➛ ${vid.timestamp}
+║ 👁️ 𝖁𝖎𝖊𝖜𝖘 ➛ ${vid.views?.toLocaleString() || 'N/A'}
+┣━━━━━━━━━━━━━━━━━━━━━┫
+║ 🔥 𝕾𝕰𝕷𝕰𝕮𝕯 𝕸𝕺𝕯𝕰 ⚠️
+║ 💎 [ 1 ] ➛ 🎵 𝕬𝖚𝖉𝖎𝖔 (MP3)
+║ 💎 [ 2 ] ➛ 🎬 𝕍𝖎𝖉𝖊𝖔 (MP4)
+┣━━━━━━━━━━━━━━━━━━━━━┫
+║ 🔗 𝕾𝖚𝖕𝖕𝖔𝖗𝖙 ➛ tiktok.com/@sadboydj1
+☠️═════════════════════☠️
+> ⚠️ 𝕰𝖝𝖊𝖈𝖚𝖙𝖊𝖉 𝕭𝖞 𝕿𝖑𝕲𝕰𝕽-𝕸𝕯`;
 
         const sent = await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
@@ -342,7 +345,7 @@ cmd({
                                     if (videoUrl) {
                                         await conn.sendMessage(from, {
                                             video: { url: videoUrl },
-                                            caption: `🎬 *${vid.title}*\n\n> Powered by LOVE-MD`
+                                            caption: `🎬 *${vid.title}*\n\n> Powered by TlGER-MD`
                                         }, { quoted: received });
                                         success = true;
                                         break;
@@ -363,7 +366,7 @@ cmd({
                     await conn.sendMessage(from, { react: { text: '✅', key: received.key } });
                 } else {
                     await conn.sendMessage(from, {
-                        text: `❌ *Invalid selection!*\nPlease reply with:\n1️⃣ for Audio (MP3)\n2️⃣ for Video (MP4)`
+                        text: `❌ Invalid selection! Please reply with 1 for Audio or 2 for Video.`
                     }, { quoted: received });
                 }
             }
