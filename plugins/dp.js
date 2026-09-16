@@ -16,7 +16,7 @@ cmd({
     
     try {
         let ppUrl = await conn.profilePictureUrl(number, 'image');
-        await conn.sendMessage(m.chat, { image: { url: ppUrl }, caption: "*Love MD - Profile Pic Downloaded*" }, { quoted: mek });
+        await conn.sendMessage(m.chat, { image: { url: ppUrl }, caption: "*TIGER-MD - Profile Pic Downloaded*" }, { quoted: mek });
     } catch (e) {
         reply("*Bhai, ya toh number galat hai ya phir uski DP private hai.*");
     }
