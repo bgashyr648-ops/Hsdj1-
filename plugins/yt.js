@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER
+//           TAGGER-MD - YOUTUBE DOWNLOADER
 //---------------------------------------------------------------------------
 //  🚀 DOWNLOAD VIDEOS AND AUDIO USING JAWADTECH APIs
 //---------------------------------------------------------------------------
@@ -7,6 +7,16 @@
 const { cmd } = require('../command');
 const axios = require('axios');
 const API_BASE = "https://xjawadtech.vercel.app";
+
+// Small caps font helper
+const toSmallCaps = (text) => {
+    const map = {
+        'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ',
+        'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ', 'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ',
+        'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ', 'z': 'ᴢ'
+    };
+    return text.split('').map(c => map[c.toLowerCase()] || c).join('');
+};
 
 // Helper to extract YouTube video ID
 function getVideoId(url) {
@@ -53,22 +63,9 @@ cmd({
 
         if (!vid) return reply("❌ No results found!");
 
-        const downloadCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${vid.title}
-║ ⏳ Duration: ${vid.timestamp}
-║ 👁️ Views: ${vid.views?.toLocaleString() || 'N/A'}
-║ 👑 Author: ${vid.author?.name || 'Unknown'}
-║ ⚠️ Status: Downloading Audio...
-┣━━━━━━━━━━━━━━━━━━━━━┫
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: downloadCaption
+            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() \vert{}\vert{} 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TAGGER-MD`
         }, { quoted: mek });
 
         let audioUrl = null;
@@ -95,20 +92,11 @@ cmd({
                         : null;
 
                     if (audioUrl) {
-                        const finalAudioCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${r?.title || vid.title}
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
                         await conn.sendMessage(from, {
                             audio: { url: audioUrl },
                             mimetype: "audio/mpeg",
                             fileName: `${r?.title || vid.title}.mp3`,
-                            ptt: false,
-                            caption: finalAudioCaption
+                            ptt: false
                         }, { quoted: mek });
                         success = true;
                         break;
@@ -162,7 +150,7 @@ cmd({
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
-                return reply("❌ No results found!");
+                return reply("❌ No video results found!");
             }
             vid = search.videos[0];
             url = vid.url;
@@ -170,21 +158,9 @@ cmd({
 
         if (!vid) return reply("❌ No results found!");
 
-        const videoCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${vid.title}
-║ 📺 Channel: ${vid.author?.name || 'Unknown'}
-║ ⏳ Duration: ${vid.timestamp}
-║ ⚠️ Status: Downloading Video...
-┣━━━━━━━━━━━━━━━━━━━━━┫
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: videoCaption
+            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name \vert{}\vert{} 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TAGGER-MD`
         }, { quoted: mek });
 
         let videoUrl = null;
@@ -204,17 +180,9 @@ cmd({
                     const response = await axios.get(apiUrl, { timeout: 15000 });
                     videoUrl = response.data?.status ? (response.data?.result?.url || response.data?.result?.video || response.data?.download?.url) : null;
                     if (videoUrl) {
-                        const finalVideoCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${vid.title}
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
                         await conn.sendMessage(from, {
                             video: { url: videoUrl },
-                            caption: finalVideoCaption
+                            caption: `🎬 *${vid.title}*\n\n> Powered by TAGGER-MD`
                         }, { quoted: mek });
                         success = true;
                         break;
@@ -274,21 +242,18 @@ cmd({
 
         if (!vid) return reply("❌ No results found!");
 
-        const caption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${vid.title}
-║ 👑 Channel: ${vid.author?.name || 'Unknown'}
-║ ⏳ Duration: ${vid.timestamp}
-║ 👁️ Views: ${vid.views?.toLocaleString() || 'N/A'}
-┣━━━━━━━━━━━━━━━━━━━━━┫
-║ 🔥 SELECT MODE ⚠️
-║ 💎 [ 1 ] ➛ 🎵 Audio (MP3)
-║ 💎 [ 2 ] ➛ 🎬 Video (MP4)
-┣━━━━━━━━━━━━━━━━━━━━━┫
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
+        const caption = `*╭┈───〔 ${toSmallCaps('YT Downloader')} 〕┈───⊷*
+*├▢ 🎬 Title:* ${vid.title}
+*├▢ 📺 Channel:* ${vid.author?.name || 'Unknown'}
+*├▢ ⏰ Duration:* ${vid.timestamp}
+*├▢ 👀 Views:* ${vid.views?.toLocaleString() || 'N/A'}
+*╰───────────────────⊷*
+*╭───⬡ ${toSmallCaps('Select Format')} ⬡───*
+*┋ ⬡ 1* 🎧 ${toSmallCaps('Audio (MP3)')}
+*┋ ⬡ 2* 📹 ${toSmallCaps('Video (MP4)')}
+*╰───────────────────⊷*
+
+> Powered by TAGGER-MD`;
 
         const sent = await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
@@ -336,20 +301,11 @@ cmd({
                                         : null;
 
                                     if (audioUrl) {
-                                        const finalAudioCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${r?.title || vid.title}
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
                                         await conn.sendMessage(from, {
                                             audio: { url: audioUrl },
                                             mimetype: "audio/mpeg",
                                             fileName: `${r?.title || vid.title}.mp3`,
-                                            ptt: false,
-                                            caption: finalAudioCaption
+                                            ptt: false
                                         }, { quoted: received });
                                         success = true;
                                         break;
@@ -384,17 +340,9 @@ cmd({
                                     const response = await axios.get(apiUrl, { timeout: 15000 });
                                     videoUrl = response.data?.status ? (response.data?.result?.url || response.data?.result?.video || response.data?.download?.url) : null;
                                     if (videoUrl) {
-                                        const finalVideoCaption = `☠️═════════════════════☠️
-║  ⚡ DANGEROUS TIGER-MD ⚡
-☠️═════════════════════☠️
-║ 🏴‍☠️ Title: ${vid.title}
-║ 🔗 Support: tiktok.com/@sadboydj1
-☠️═════════════════════☠️
-> ⚠️ Executed By TIGER-MD`;
-
                                         await conn.sendMessage(from, {
                                             video: { url: videoUrl },
-                                            caption: finalVideoCaption
+                                            caption: `🎬 *${vid.title}*\n\n> Powered by TAGGER-MD`
                                         }, { quoted: received });
                                         success = true;
                                         break;
@@ -415,7 +363,7 @@ cmd({
                     await conn.sendMessage(from, { react: { text: '✅', key: received.key } });
                 } else {
                     await conn.sendMessage(from, {
-                        text: `❌ Invalid selection! Please reply with 1 for Audio or 2 for Video.`
+                        text: `❌ *Invalid selection!*\nPlease reply with:\n1️⃣ for Audio (MP3)\n2️⃣ for Video (MP4)`
                     }, { quoted: received });
                 }
             }
@@ -451,6 +399,7 @@ async (conn, mek, m, { from, text, reply }) => {
         if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
         const yts = require('yt-search');
+
         const search = await yts(text);
 
         if (!search.videos || !search.videos.length) {
@@ -459,15 +408,13 @@ async (conn, mek, m, { from, text, reply }) => {
 
         const results = search.videos.slice(0, 10);
 
-        let mesaj = `☠️═════════════════════☠️\n`;
-        mesaj += `║  ⚡ DANGEROUS TIGER-MD ⚡\n`;
-        mesaj += `☠️═════════════════════☠️\n`;
-        mesaj += `║ 🔎 Query: ${text}\n`;
-        mesaj += `║ 📊 Results: ${search.videos.length}\n`;
-        mesaj += `☠️═════════════════════☠️\n\n`;
+        let mesaj = `*╭┈───〔 ${toSmallCaps('YouTube Search')} 〕┈───⊷*\n`;
+        mesaj += `*├▢ 🔎 Query:* ${text}\n`;
+        mesaj += `*├▢ 📊 Results:* ${search.videos.length}\n`;
+        mesaj += `*╰───────────────────⊷*\n\n`;
 
         results.forEach((video, i) => {
-            mesaj += `*${i + 1}. ${video.title}*\n`;
+            mesaj += `*${i + 1}.${video.title}*\n`;
             mesaj += `*├▢ 🔗 URL:* ${video.url}\n`;
             mesaj += `*├▢ ⏱️ Duration:* ${video.timestamp}\n`;
             mesaj += `*├▢ 👀 Views:* ${video.views?.toLocaleString() || 'N/A'}\n`;
@@ -475,10 +422,9 @@ async (conn, mek, m, { from, text, reply }) => {
             mesaj += `*╰───────────────────⊷*\n\n`;
         });
 
-        mesaj += `☠️═════════════════════☠️\n`;
-        mesaj += `║ 🔗 Support: tiktok.com/@sadboydj1\n`;
-        mesaj += `☠️═════════════════════☠️\n`;
-        mesaj += `> ⚠️ Executed By TIGER-MD`;
+        mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
+        mesaj += `*┋ ⬡ ${toSmallCaps('TAGGER-MD')}*\n`;
+        mesaj += `*╰───────────────────⊷*`;
 
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
 
