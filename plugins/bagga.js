@@ -11,8 +11,10 @@ cmd({
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
     try {
-        // Tera bheja hua nekos.best API ka endpoint
-        let apiUrl = `https://nekos.best/api/v2/search?query=couple&type=1`;
+        let queries = ["couple", "kiss", "hug", "waifu", "neko"];
+        let randomQuery = queries[Math.floor(Math.random() * queries.length)];
+        
+        let apiUrl = `https://nekos.best/api/v2/search?query=${randomQuery}&type=1&amount=20`;
         let response = await axios.get(apiUrl);
         let data = response.data;
 
@@ -24,7 +26,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => 
         let imageUrl = data.results[randomIndex].url;
         let artistName = data.results[randomIndex].artist_name || "Unknown";
 
-        let caption = `❤️‍🔥 *FULL ROMANTIC MOOD* ❤️‍🔥\n\n✨ *Pyar Mohabbat* ✨\n*Artist:* ${artistName}\n\n🤖 *Bot:* Tiger MD\n👑 *Owner:* BAGGA SHER MD`;
+        let caption = `❤️‍🔥 *FULL ROMANTIC MOOD* ❤️‍🔥\n\n✨ *Pyar Mohabbat* ✨\n*Artist:* ${artistName}\n\n🤖 *Bot:* TIGER MD`;
 
         return await conn.sendMessage(from, { image: { url: imageUrl }, caption: caption }, { quoted: mek });
 
