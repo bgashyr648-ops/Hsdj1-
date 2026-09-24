@@ -22,10 +22,8 @@ const toSmallCaps = (text) => {
 
 // Format category with your exact styles
 const formatCategory = (category, cmds) => {
-    // Filter out commands with empty or undefined patterns
     const validCmds = cmds.filter(cmd => cmd.pattern && cmd.pattern.trim() !== '');
-    
-    if (validCmds.length === 0) return ''; // Skip empty categories
+    if (validCmds.length === 0) return ''; 
     
     let title = `\n\`『 ${toSmallCaps(category.toUpperCase())} 』\`\n╭───────────────────⊷\n`;
     let body = validCmds.map(cmd => {
@@ -41,16 +39,9 @@ const isValidImageUrl = (url) => {
     if (!url || typeof url !== 'string' || url.trim() === '') {
         return false;
     }
-    
     const urlLower = url.toLowerCase();
-    
-    // Check image extensions
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    if (imageExtensions.some(ext => urlLower.endsWith(ext))) {
-        return true;
-    }
-    
-    return false;
+    return imageExtensions.some(ext => urlLower.endsWith(ext));
 };
 
 cmd({
@@ -64,28 +55,23 @@ cmd({
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply, userConfig }) => {
     try {
-        // Show typing presence before processing
         await conn.sendPresenceUpdate('composing', from);
         
         let totalCommands = Object.keys(commands).length;
         
-        // Get all unique categories and filter out undefined/null categories
         const categories = [...new Set(Object.values(commands).map(c => c.category))].filter(cat => 
             cat && cat.trim() !== '' && cat !== 'undefined'
         );
         
-        // Organize commands by category and filter out empty categories
         const categorized = {};
         categories.forEach(cat => {
             const categoryCommands = Object.values(commands).filter(c => c.category === cat);
-            // Only add category if it has valid commands
             const validCommands = categoryCommands.filter(cmd => cmd.pattern && cmd.pattern.trim() !== '');
             if (validCommands.length > 0) {
                 categorized[cat] = validCommands;
             }
         });
 
-        // Build menu sections - only for categories that have commands
         let menuSections = '';
         for (const [category, cmds] of Object.entries(categorized)) {
             if (cmds && cmds.length > 0) {
@@ -96,7 +82,6 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
             }
         }
 
-        // Get all values from userConfig with fallback to config
         const BOT_NAME = userConfig?.BOT_NAME || config.BOT_NAME || "Bot";
         const OWNER_NAME = userConfig?.OWNER_NAME || config.OWNER_NAME || "Owner";
         const PREFIX = userConfig?.PREFIX || config.PREFIX || ".";
@@ -104,10 +89,8 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
         const VERSION = userConfig?.VERSION || config.VERSION || "1.0.0";
         const DESCRIPTION = userConfig?.DESCRIPTION || config.DESCRIPTION || "";
         
-        // Get BOT_IMAGE from userConfig first, then config.BOT_IMAGE, then config.BOT_MEDIA_URL
         const BOT_IMAGE = userConfig?.BOT_IMAGE || userConfig?.BOT_MEDIA_URL || config.BOT_IMAGE || config.BOT_MEDIA_URL;
         
-        // Main menu text with only labels in small caps, values unchanged
         let dec = `*╭┈───〔 ${BOT_NAME} 〕┈───⊷*
 *├▢ 🤖 ${toSmallCaps('Owner')}:* ${OWNER_NAME}
 *├▢ 📜 ${toSmallCaps('Commands')}:* ${totalCommands}
@@ -120,30 +103,27 @@ ${menuSections}
 
 > ${DESCRIPTION || ''}`;
 
-        // Determine which image to use
+        // Dynamic Image Priority Logic
         let imageToUse;
         const localImagePath = path.join(__dirname, '../lib/bot.png');
         
-        // Check if BOT_IMAGE is a valid image URL
-        if (isValidImageUrl(BOT_IMAGE)) {
+        if (global.menuImageBuffer) {
+            imageToUse = global.menuImageBuffer;
+        } else if (fs.existsSync(localImagePath)) {
+            imageToUse = fs.readFileSync(localImagePath);
+        } else if (isValidImageUrl(BOT_IMAGE)) {
             try {
-                // Check if server is accessible (timeout after 3 seconds)
                 await axios.head(BOT_IMAGE, { timeout: 3000 });
-                // Server is up, use the URL image
-                imageToUse = BOT_IMAGE;
+                imageToUse = { url: BOT_IMAGE };
             } catch (serverError) {
-                // Server is down or inaccessible, use local image
-                console.log('Image server down, using local image:', serverError.message);
-                imageToUse = localImagePath;
+                imageToUse = { url: BOT_IMAGE };
             }
         } else {
-            // Invalid image format, use local image
-            imageToUse = localImagePath;
+            imageToUse = { url: BOT_IMAGE };
         }
 
-        // Send menu image with caption
         await conn.sendMessage(from, { 
-            image: { url: imageToUse },
+            image: imageToUse,
             caption: dec, 
             contextInfo: { 
                 mentionedJid: [m.sender], 
@@ -157,25 +137,20 @@ ${menuSections}
             } 
         }, { quoted: mek });
 
-        // Send love.mp3 audio after menu (with small delay)
         setTimeout(async () => {
             try {
                 const audioPath = path.join(__dirname, '../lib/love.mp3');
-                
-                // Check if audio file exists
                 if (fs.existsSync(audioPath)) {
                     await conn.sendMessage(from, {
                         audio: { url: audioPath },
                         mimetype: 'audio/mpeg',
-                        ptt: false  // Set to true if you want as voice note
+                        ptt: false
                     }, { quoted: mek });
-                } else {
-                    console.log('love.mp3 not found at:', audioPath);
                 }
             } catch (audioError) {
                 console.log('Error sending audio:', audioError);
             }
-        }, 1000); // 1 second delay after menu
+        }, 1000);
 
     } catch (e) { 
         console.log(e); 
