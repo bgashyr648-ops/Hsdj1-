@@ -2,32 +2,25 @@ const axios = require('axios');
 
 cmd({
     pattern: "love",
-    alias: ["romance", "couple", "pyar", "hotlove"],
-    desc: "Get full romantic anime images",
+    alias: ["romance", "couple", "pyar"],
+    desc: "Get romantic images",
     category: "fun",
-    react: "❤️‍🔥",
+    react: "❤️",
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
     try {
-        let queries = ["couple", "kiss", "hug", "holding_hands", "cuddle", "love"];
-        let randomQuery = queries[Math.floor(Math.random() * queries.length)];
-        
-        let query = q ? q : randomQuery;
-        let apiUrl = `https://nekos.best/api/v2/search?query=${encodeURIComponent(query)}&type=1`;
+        // Hum yahan ek doosri reliable API use kar rahe hain
+        let response = await axios.get(`https://nekos.moe/api/v1/random?image=true&nsfw=false`);
+        let resData = response.data;
 
-        let response = await axios.get(apiUrl);
-        let data = response.data;
-
-        if (!data.results || data.results.length === 0) {
-            return reply("Error: No image found, try again!");
+        if (!resData.images || resData.images.length === 0) {
+            return reply("Error: Image nahi mili!");
         }
 
-        let randomIndex = Math.floor(Math.random() * data.results.length);
-        let imageUrl = data.results[randomIndex].url;
-        let artistName = data.results[randomIndex].artist_name || "Unknown";
+        let imageUrl = `https://nekos.moe/image/${resData.images[0].id}`;
 
-        let caption = `❤️‍🔥 *FULL ROMANTIC MOOD* ❤️‍🔥\n\n✨ *Pyar Mohabbat* ✨\n*Artist:* ${artistName}\n\n🤖 *Bot:* Tiger MD\n👑 *Owner:* BAGGA SHER MD`;
+        let caption = `❤️ *ROMANTIC MOOD* ❤️\n\n✨ *Pyar Mohabbat* ✨\n\n🤖 *Bot:* Tiger MD\n👑 *Owner:* BAGGA SHER MD`;
 
         return await conn.sendMessage(from, { image: { url: imageUrl }, caption: caption }, { quoted: mek });
 
