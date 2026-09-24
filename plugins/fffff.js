@@ -1,7 +1,5 @@
 const { cmd } = require('../command')
 const { downloadContentFromMessage } = require('@whiskeysockets/baileys')
-const axios = require('axios')
-const FormData = require('form-data')
 const fs = require('fs')
 const path = require('path')
 
@@ -15,7 +13,7 @@ cmd({
 },
 async (conn, mek, m, { from, isOwner, reply }) => {
     try {
-        // 1. Check karo ki sender Owner hai ya khud Bot ka number hai
+        // 1. Check Owner / Self Number
         let botJid = conn.user.id.includes(':') ? conn.user.id.split(':')[0] + '@s.whatsapp.net' : conn.user.id;
         let senderJid = m.sender;
 
@@ -25,7 +23,7 @@ async (conn, mek, m, { from, isOwner, reply }) => {
             return reply("❌ Yeh command sirf bot owner ya jis number par bot chal raha hai wahi use kar sakta hai!");
         }
 
-        // 2. Reply image check karo
+        // 2. Reply image check
         let quotedMsg = m.quoted ? m.quoted : m;
         let mime = (quotedMsg.msg || quotedMsg).mimetype || quotedMsg.mtype || '';
 
@@ -35,7 +33,7 @@ async (conn, mek, m, { from, isOwner, reply }) => {
 
         reply("⏳ *D.P Update ho rahi hai, thoda wait karein...*");
 
-        // 3. Media Download
+        // 3. Download image buffer
         let downloadType = quotedMsg.msg ? quotedMsg.msg : quotedMsg;
         let stream = await downloadContentFromMessage(downloadType, 'image');
         let buffer = Buffer.from([]);
@@ -43,38 +41,21 @@ async (conn, mek, m, { from, isOwner, reply }) => {
             buffer = Buffer.concat([buffer, chunk]);
         }
 
-        // 4. Local File (lib/bot.png) Replace
+        if (!buffer || buffer.length === 0) {
+            return reply("❌ Photo download nahi ho saki!");
+        }
+
+        // 4. Overwrite local 'bot.png' file
         let filePath = path.join(__dirname, '../lib/bot.png');
-        try {
-            fs.writeFileSync(filePath, buffer);
-        } catch (err) {
-            console.log("Local file save warning: ", err);
-        }
+        fs.writeFileSync(filePath, buffer);
 
-        // 5. Image ko Online Server (Imgbb) par upload karna
-        let form = new FormData();
-        form.append('image', buffer.toString('base64'));
-        
-        let uploadRes = await axios.post('https://api.imgbb.com/1/upload?key=124032d80d1999c08d1f21cc48981c2f', form, {
-            headers: { ...form.getHeaders() }
-        });
+        // 5. Update global image buffer / local path
+        global.menuImageBuffer = buffer;
 
-        let imageUrl = uploadRes.data.data.url;
-
-        // 6. Config.js me Image URL update karna
-        let configPath = path.join(__dirname, '../config.js');
-        if (fs.existsSync(configPath)) {
-            let configContent = fs.readFileSync(configPath, 'utf8');
-            if (configContent.includes('MENU_IMAGE')) {
-                configContent = configContent.replace(/MENU_IMAGE\s*=\s*['"`].*?['"`]/g, `MENU_IMAGE = '${imageUrl}'`);
-                fs.writeFileSync(configPath, configContent);
-            }
-        }
-
-        // 7. Success Reply Photo aur Text ke sath
+        // 6. Reply back with new photo & caption
         return await conn.sendMessage(from, { 
             image: buffer, 
-            caption: `✅ *Aapki Bot Menu DP Successfully Update Ho Gayi Hai!*\n\n🖼️ *Naya Image Link:* ${imageUrl}\n\nAb \`.m\` ya \`.menu\` likhne par wahi nayi photo aayegi.` 
+            caption: "✅ *Aapki Bot Menu DP Successfully Lag Gayi Hai!*\n\nAb `.m` ya `.menu` likhne par wahi nayi photo aayegi." 
         }, { quoted: mek });
 
     } catch (e) {
@@ -82,3 +63,4 @@ async (conn, mek, m, { from, isOwner, reply }) => {
         reply(`❌ Error: ${e.message}`);
     }
 });
+
