@@ -3,66 +3,66 @@ const axios = require('axios');
 
 const apiKey = "h1QtWouuuycfwXiB8xR7ytupRufcd26u";
 
-// 1. Dance Command (Sirf .dance likhne par dance ka naya GIF aayega)
+// 1. Dance GIF Command
 cmd({
     pattern: "dance",
     alias: ["dancegif"],
-    desc: "Send a random changing dance GIF",
+    desc: "Get random dance GIFs",
     category: "fun",
+    react: "💃",
+    filename: __filename
 },
-async (conn, mek, m, { reply }) => {
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
     try {
-        // Limit ko 50 kar diya hai taaki bohot saare options mein se har baar alag GIF aaye
-        const apiUrl = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=dance&limit=50`;
-        const response = await axios.get(apiUrl);
-        
-        if (response.data.data.length === 0) {
-            return reply("Sorry, no GIF found.");
+        let apiUrl = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=dance&limit=50`;
+        let response = await axios.get(apiUrl);
+        let data = response.data;
+
+        if (!data || !data.data || data.data.length === 0) {
+            return reply("❌ Error: GIF nahi mili!");
         }
 
-        const randomIndex = Math.floor(Math.random() * response.data.data.length);
-        const gifUrl = response.data.data[randomIndex].images.original.url;
+        let randomIndex = Math.floor(Math.random() * data.data.length);
+        let gifUrl = data.data[randomIndex].images.original.url;
 
-        await conn.sendMessage(m.chat, { 
-            video: { url: gifUrl }, 
-            gifPlayback: true, 
-            caption: `Dance GIF` 
-        }, { quoted: mek });
+        let caption = `💃 *DANCE GIF* 💃\n\n🤖 *Bot:* TIGER MD\n👑 *Owner:* BAGGA SHER MD`;
 
-    } catch (error) {
-        console.error(error);
-        reply("An error occurred: " + error.message);
+        return await conn.sendMessage(from, { video: { url: gifUrl }, gifPlayback: true, caption: caption }, { quoted: mek });
+
+    } catch (e) {
+        console.error('Error in dance command:', e);
+        return reply(`❌ Error: ${e.message}`);
     }
 });
 
-// 2. Random/Trending GIF Command (Sirf .gif likhne par har baar naya aur alag GIF aayega)
+// 2. Random GIF Command
 cmd({
     pattern: "gif",
-    alias: ["randomgif"],
-    desc: "Send a random changing trending GIF",
+    alias: ["giphy", "randomgif"],
+    desc: "Get random trending GIFs",
     category: "fun",
+    react: "🎬",
+    filename: __filename
 },
-async (conn, mek, m, { reply }) => {
+async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
     try {
-        // Limit ko 50 kiya hai taaki har baar bilkul naya aur alag random GIF mile
-        const apiUrl = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=50`;
-        const response = await axios.get(apiUrl);
-        
-        if (response.data.data.length === 0) {
-            return reply("Sorry, no GIF found.");
+        let apiUrl = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=50`;
+        let response = await axios.get(apiUrl);
+        let data = response.data;
+
+        if (!data || !data.data || data.data.length === 0) {
+            return reply("❌ Error: GIF nahi mili!");
         }
 
-        const randomIndex = Math.floor(Math.random() * response.data.data.length);
-        const gifUrl = response.data.data[randomIndex].images.original.url;
+        let randomIndex = Math.floor(Math.random() * data.data.length);
+        let gifUrl = data.data[randomIndex].images.original.url;
 
-        await conn.sendMessage(m.chat, { 
-            video: { url: gifUrl }, 
-            gifPlayback: true, 
-            caption: `Random GIF` 
-        }, { quoted: mek });
+        let caption = `🎬 *RANDOM GIPHY* 🎬\n\n🤖 *Bot:* TIGER MD\n👑 *Owner:* BAGGA SHER MD`;
 
-    } catch (error) {
-        console.error(error);
-        reply("An error occurred: " + error.message);
+        return await conn.sendMessage(from, { video: { url: gifUrl }, gifPlayback: true, caption: caption }, { quoted: mek });
+
+    } catch (e) {
+        console.error('Error in gif command:', e);
+        return reply(`❌ Error: ${e.message}`);
     }
 });
