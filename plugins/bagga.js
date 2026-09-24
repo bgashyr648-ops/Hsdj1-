@@ -1,104 +1,5 @@
 const { cmd } = require("../command");
 
-// .t command
-cmd({
-    pattern: "t",
-    desc: "Send badmashi type video",
-    category: "download",
-    react: "😈",
-    filename: __filename,
-    use: ".t"
-}, async (conn, mek, m, { from, reply }) => {
-    try {
-        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
-
-        const videoUrl = badmashiVideos[Math.floor(Math.random() * badmashiVideos.length)];
-
-        if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
-        }
-
-        await conn.sendMessage(from, {
-            video: { url: videoUrl },
-            mimetype: 'video/mp4',
-            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`
-        }, { quoted: mek });
-
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-
-    } catch (e) {
-        console.error("Error in .t:", e);
-        await reply(`❌ Error: ${e.message || e}`);
-        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-    }
-});
-
-// .x command
-cmd({
-    pattern: "x",
-    desc: "Send girls dance video",
-    category: "download",
-    react: "💃",
-    filename: __filename,
-    use: ".x"
-}, async (conn, mek, m, { from, reply }) => {
-    try {
-        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
-
-        const videoUrl = danceVideos[Math.floor(Math.random() * danceVideos.length)];
-
-        if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
-        }
-
-        await conn.sendMessage(from, {
-            video: { url: videoUrl },
-            mimetype: 'video/mp4',
-            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`
-        }, { quoted: mek });
-
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-
-    } catch (e) {
-        console.error("Error in .x:", e);
-        await reply(`❌ Error: ${e.message || e}`);
-        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-    }
-});
-
-// .v command
-cmd({
-    pattern: "v",
-    desc: "Send custom video link",
-    category: "download",
-    react: "🎬",
-    filename: __filename,
-    use: ".v"
-}, async (conn, mek, m, { from, reply }) => {
-    try {
-        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
-
-        const videoUrl = customVideos[Math.floor(Math.random() * customVideos.length)];
-
-        if (!videoUrl || !videoUrl.startsWith('http')) {
-            return await reply(`❌ Video link is invalid!`);
-        }
-
-        await conn.sendMessage(from, {
-            video: { url: videoUrl },
-            mimetype: 'video/mp4',
-            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`
-        }, { quoted: mek });
-
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-
-    } catch (e) {
-        console.error("Error in .v:", e);
-        await reply(`❌ Error: ${e.message || e}`);
-        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-    }
-});
-
 // Direct video links for .t command (Badmashi Type)
 const badmashiVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788579538798_B9SJlFwdN.mp4",
@@ -128,3 +29,81 @@ const customVideos = [
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788579447001__GOtBMjyO.mp4",
     "https://ik.imagekit.io/kfyseccyf/SHABAN-1788579433187_C9zQfk6oT.mp4"
 ];
+
+// .t command
+cmd({
+    pattern: "t",
+    desc: "Send badmashi type video",
+    category: "download",
+    react: "😈",
+    filename: __filename,
+    use: ".t"
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+        const videoUrl = badmashiVideos[Math.floor(Math.random() * badmashiVideos.length)];
+        
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`,
+            mimetype: "video/mp4"
+        }, { quoted: mek });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+    } catch (e) {
+        console.error(e);
+        await reply(`❌ Error: ${e.message || e}`);
+    }
+});
+
+// .x command
+cmd({
+    pattern: "x",
+    desc: "Send girls dance video",
+    category: "download",
+    react: "💃",
+    filename: __filename,
+    use: ".x"
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+        const videoUrl = danceVideos[Math.floor(Math.random() * danceVideos.length)];
+        
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`,
+            mimetype: "video/mp4"
+        }, { quoted: mek });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+    } catch (e) {
+        console.error(e);
+        await reply(`❌ Error: ${e.message || e}`);
+    }
+});
+
+// .v command
+cmd({
+    pattern: "v",
+    desc: "Send custom video link",
+    category: "download",
+    react: "🎬",
+    filename: __filename,
+    use: ".v"
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+        const videoUrl = customVideos[Math.floor(Math.random() * customVideos.length)];
+        
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            caption: `> Powered by TAGER-MD | Owner: Bagga Sher MD ✅`,
+            mimetype: "video/mp4"
+        }, { quoted: mek });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+    } catch (e) {
+        console.error(e);
+        await reply(`❌ Error: ${e.message || e}`);
+    }
+});
