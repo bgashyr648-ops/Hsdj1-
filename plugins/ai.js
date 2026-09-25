@@ -1,42 +1,70 @@
 const { cmd } = require('../command');
 const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
 
 cmd({
-    pattern: "swag",
-    alias: ["badboy", "mafia", "attitude", "dp"],
-    desc: "Get stylish boy and girl attitude DPs via API",
+    pattern: "tourl",
+    alias: ["upload", "url", "link"],
+    desc: "Uploads media to Catbox and returns a reliable public URL",
     category: "owner",
-    react: "🔥",
+    react: "🔗",
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
+    let mediaStream = null;
     try {
-        let query = "stylish boy and girl attitude dp"; // Default mixed
-        
-        // Agar user .swag 1 likhega toh sirf boy aayega
-        if (q === "1") {
-            query = "stylish badboy attitude boy dp";
-        } 
-        // Agar user .swag 2 likhega toh sirf girl aayegi
-        else if (q === "2") {
-            query = "stylish attitude girl dp";
+        const quotedMsg = mek.msg?.contextInfo?.quotedMessage;
+        if (!quotedMsg) {
+            return reply("❌ Please reply to a video, audio, or image to use this command!");
         }
 
-        let apiUrl = `https://apis.davidcyriltech.my.id/pinterest?query=${encodeURIComponent(query)}`;
-        let apiData = await axios.get(apiUrl);
+        await reply("⏳ Downloading media, please wait...");
+        mediaStream = await conn.downloadAndSaveMediaMessage(quoted);
         
-        let imageUrl = apiData.data.result[Math.floor(Math.random() * apiData.data.result.length)];
-        let imgBuffer = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        if (!mediaStream) {
+            return reply("❌ Failed to download the media!");
+        }
 
-        let caption = `🔥 *TIGER MD* \n👑 *Owner:* BAGGA SHER MD`;
+        await reply("☁️ Uploading file to secure server...");
 
-        return await conn.sendMessage(from, { image: Buffer.from(imgBuffer.data), caption: caption }, { quoted: mek });
+        const form = new FormData();
+        form.append('reqtype', 'fileupload');
+        form.append('fileToUpload', fs.createReadStream(mediaStream));
+
+        const uploadResponse = await axios.post('https://catbox.moe/user/api.php', form, {
+            headers: { ...form.getHeaders() },
+            timeout: 60000 // 60 seconds timeout for larger videos
+        });
+
+        let directUrl = uploadResponse.data ? uploadResponse.data.trim() : "";
+
+        if (!directUrl.startsWith('http')) {
+            throw new Error("Invalid URL received from server.");
+        }
+
+        // Clean up temporary local file
+        if (fs.existsSync(mediaStream)) {
+            fs.unlinkSync(mediaStream);
+        }
+
+        let responseText = `🔗 *MEDIA URL GENERATED*\n\n` +
+                           `📁 *Link:* ${directUrl}\n\n` +
+                           `🔥 *TIGER MD* \n👑 *Owner:* BAGGA SHER MD`;
+
+        return await conn.sendMessage(from, { text: responseText }, { quoted: mek });
 
     } catch (e) {
-        console.error('Error in swag command:', e);
-        let backupUrl = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1024";
-        let buf = await axios.get(backupUrl, { responseType: 'arraybuffer' });
-        let caption = `🔥 *TIGER MD* \n👑 *Owner:* BAGGA SHER MD`;
-        return await conn.sendMessage(from, { image: Buffer.from(buf.data), caption: caption }, { quoted: mek });
+        // Ensure local temporary file is cleaned up even if an error occurs to prevent crashes
+        if (mediaStream && fs.existsSync(mediaStream)) {
+            try {
+                fs.unlinkSync(mediaStream);
+            } catch (err) {
+                console.error("Cleanup error:", err);
+            }
+        }
+        
+        console.error('Error in tourl command:', e);
+        return reply(`❌ Upload failed: ${e.message}`);
     }
 });
