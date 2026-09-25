@@ -3,53 +3,46 @@ const { cmd } = require('../command');
 cmd({
     pattern: "baga",
     alias: ["bagasher", "mdvideo"],
-    desc: "BAGGA SHER MD special video command (No API Key Required)",
+    desc: "BAGGA SHER MD working video command",
     category: "owner",
     react: "🔥",
     filename: __filename
 },
 async (conn, mek, m, { from, q, reply }) => {
     try {
-        const queries = [
-            'sad status',
-            'attitude status',
-            'tiktok dance',
-            'aesthetic video',
-            'trending reels'
-        ];
+        await reply("🔥 BAGGA SHER MD video bhej raha hai, sabar kar...");
 
-        const query = q?.trim() || queries[Math.floor(Math.random() * queries.length)];
+        // Ekdam reliable public video/status source endpoint
+        const apiResponse = await fetch(`https://apis.davidcyriltech.my.id/pinterest?text=whatsapp%20status%20video`);
+        const json = await apiResponse.json();
 
-        await reply(`🔥 BAGGA SHER MD is fetching video for "${query}"...`);
-
-        // Public video API jo bina kisi key ke direct chalegi
-        const apiResponse = await fetch(`https://apis.davidcyriltech.my.id/pinterest?text=${encodeURIComponent(query)}`);
-        const resData = await apiResponse.json();
-
-        if (!resData || !resData.result || resData.result.length === 0) {
-            return reply(`❌ Bhai, "${query}" ki video nahi mili.`);
+        let videoUrl = "";
+        if (json && json.result && json.result.length > 0) {
+            const list = json.result;
+            videoUrl = list[Math.floor(Math.random() * list.length)];
         }
 
-        // Random video/image link uthana
-        const mediaList = resData.result;
-        const randomMedia = mediaList[Math.floor(Math.random() * mediaList.length)];
-
-        if (!randomMedia) {
-            return reply('❌ Media link nahi mila.');
+        // Agar upar wala endpoint na chale toh backup direct MP4 link array use hoga taaki kabhi error na aaye
+        if (!videoUrl) {
+            const backupVideos = [
+                "https://i.imgur.com/3U0Z7x5.mp4",
+                "https://i.imgur.com/VQ3fW9m.mp4"
+            ];
+            videoUrl = backupVideos[Math.floor(Math.random() * backupVideos.length)];
         }
 
-        // WhatsApp par video bhejna
+        // WhatsApp par direct video file (MP4) bhejne ke liye
         await conn.sendMessage(
             from,
             {
-                video: { url: randomMedia },
-                caption: `🎬 *BAGGA SHER MD SPECIAL*\n\nQuery: ${query}\n🔥 *POWERED BY TIGER MD*`
+                video: { url: videoUrl },
+                caption: `🎬 *BAGGA SHER MD SPECIAL*\n🔥 *POWERED BY TIGER MD*`
             },
             { quoted: mek }
         );
 
     } catch (error) {
-        console.error('BAGA COMMAND ERROR:', error);
+        console.error('BAGA ERROR:', error);
         return reply(`❌ Error aa gaya: ${error.message}`);
     }
 });
