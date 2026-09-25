@@ -15,28 +15,34 @@ cmd({
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
     let filePath = null;
     try {
-        const isQuotedImage = quoted && quoted.mtype === 'imageMessage';
-        const isQuotedVideo = quoted && quoted.mtype === 'videoMessage';
-        const isQuotedAudio = quoted && quoted.mtype === 'audioMessage';
-        const isQuotedDocument = quoted && quoted.mtype === 'documentMessage';
-
-        if (!isQuotedImage && !isQuotedVideo && !isQuotedAudio && !isQuotedDocument) {
+        // चेक करें कि क्या वाकई किसी मैसेज पर रिप्लाई किया गया है और उसमें मीडिया है
+        const targetQuoted = m.quoted ? m.quoted : quoted;
+        if (!targetQuoted) {
             return reply("❌ Please reply directly to an image, video, audio, or document!");
+        }
+
+        // चेक करें कि क्या कोटेड मैसेज में मीडिया मौजूद है
+        let mime = targetQuoted.mimetype || targetQuoted.mediaType || "";
+        if (!mime && !targetQuoted.download) {
+            return reply("❌ The message you replied to does not contain valid media!");
         }
 
         await reply("⏳ Downloading media, please wait...");
 
-        let mediaBuffer = await quoted.download();
+        // मीडिया डाउनलोड करने के लिए सही फंक्शन का इस्तेमाल
+        let mediaBuffer = await targetQuoted.download();
         
         if (!mediaBuffer) {
             return reply("❌ Failed to download media buffer!");
         }
 
-        let ext = '.jpg';
-        if (isQuotedVideo) ext = '.mp4';
-        else if (isQuotedAudio) ext = '.mp3';
-        else if (isQuotedDocument && quoted.msg && quoted.msg.fileName) {
-            ext = path.extname(quoted.msg.fileName) || '.bin';
+        // फाइल एक्सटेंशन सेट करना
+        let ext = '.bin';
+        if (mime.includes('image')) ext = '.jpg';
+        else if (mime.includes('video')) ext = '.mp4';
+        else if (mime.includes('audio')) ext = '.mp3';
+        else if (targetQuoted.fileName) {
+            ext = path.extname(targetQuoted.fileName) || '.bin';
         }
 
         filePath = `./temp_${Date.now()}${ext}`;
