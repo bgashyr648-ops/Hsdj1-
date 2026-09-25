@@ -1,64 +1,55 @@
 const { cmd } = require('../command');
 
 cmd({
-    pattern: "ai",
-    alias: ["chat", "gpt", "ask", "bot"],
-    desc: "WhatsApp par sabhi kaam aur coding karne ke liye advanced AI",
-    category: "main",
-    react: "⚡",
+    pattern: "baga",
+    alias: ["bagasher", "mdvideo"],
+    desc: "BAGGA SHER MD special video command (No API Key Required)",
+    category: "owner",
+    react: "🔥",
     filename: __filename
 },
 async (conn, mek, m, { from, q, reply }) => {
     try {
-        if (!q) return reply("❌ Bhai koi sawal ya coding command likho! Jaise: .ai JavaScript ka code likho");
+        const queries = [
+            'sad status',
+            'attitude status',
+            'tiktok dance',
+            'aesthetic video',
+            'trending reels'
+        ];
 
-        await reply("⚡ TIGER MD AI is processing...");
+        const query = q?.trim() || queries[Math.floor(Math.random() * queries.length)];
 
-        // Yahan apni bilkul fresh aur asli Groq API key daal le
-        const apiKey = "YOUR_REAL_GROQ_API_KEY_HERE";
+        await reply(`🔥 BAGGA SHER MD is fetching video for "${query}"...`);
 
-        if (!apiKey || apiKey.includes("YOUR_REAL")) {
-            return reply("❌ Bhai, code ke andar apni asli Groq API key nahi dali tune! Use daal kar dobara try kar.");
+        // Public video API jo bina kisi key ke direct chalegi
+        const apiResponse = await fetch(`https://apis.davidcyriltech.my.id/pinterest?text=${encodeURIComponent(query)}`);
+        const resData = await apiResponse.json();
+
+        if (!resData || !resData.result || resData.result.length === 0) {
+            return reply(`❌ Bhai, "${query}" ki video nahi mili.`);
         }
 
-        const apiResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
+        // Random video/image link uthana
+        const mediaList = resData.result;
+        const randomMedia = mediaList[Math.floor(Math.random() * mediaList.length)];
+
+        if (!randomMedia) {
+            return reply('❌ Media link nahi mila.');
+        }
+
+        // WhatsApp par video bhejna
+        await conn.sendMessage(
+            from,
+            {
+                video: { url: randomMedia },
+                caption: `🎬 *BAGGA SHER MD SPECIAL*\n\nQuery: ${query}\n🔥 *POWERED BY TIGER MD*`
             },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are TIGER MD AI, an elite software developer and master assistant created by BAGGA SHER MD. Provide clean, production-ready, error-free JavaScript/Node.js code and accurate technical solutions instantly in Roman English."
-                    },
-                    {
-                        role: "user",
-                        content: q
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 4096
-            })
-        });
+            { quoted: mek }
+        );
 
-        const result = await apiResponse.json();
-        
-        if (!result.choices || !result.choices.length) {
-            return reply(`❌ API Error: ${JSON.stringify(result)}`);
-        }
-
-        let aiAnswer = result.choices[0].message.content;
-
-        let responseText = `🤖 *TIGER MD ADVANCED AI*\n\n${aiAnswer}\n\n` +
-                           `🔥 *POWERED BY BAGGA SHER MD*`;
-
-        return await conn.sendMessage(from, { text: responseText }, { quoted: mek });
-
-    } catch (e) {
-        console.error('Error in AI command:', e);
-        return reply(`❌ Code mein yeh error aa gaya hai: ${e.message}`);
+    } catch (error) {
+        console.error('BAGA COMMAND ERROR:', error);
+        return reply(`❌ Error aa gaya: ${error.message}`);
     }
 });
