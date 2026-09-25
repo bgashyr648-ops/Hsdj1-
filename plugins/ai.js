@@ -1,79 +1,58 @@
 const { cmd } = require('../command');
-const fs = require('fs');
-const path = require('path');
 const fetch = require('node-fetch');
-const FormData = require('form-data');
 
 cmd({
-    pattern: "tourl",
-    alias: ["upload", "url", "link"],
-    desc: "Uploads media and returns public URL",
-    category: "owner",
-    react: "🔗",
+    pattern: "ai",
+    alias: ["chat", "gpt", "ask", "bot"],
+    desc: "WhatsApp par sabhi kaam aur coding karne ke liye advanced AI",
+    category: "main",
+    react: "⚡",
     filename: __filename
 },
-async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
-    let filePath = null;
+async (conn, mek, m, { from, q, reply }) => {
     try {
-        const targetQuoted = m.quoted ? m.quoted : quoted;
-        if (!targetQuoted) {
-            return reply("❌ Please reply directly to an image, video, audio, or document!");
-        }
+        if (!q) return reply("❌ Bhai koi sawal ya coding command likho! Jaise: .ai JavaScript ka code likho");
 
-        let mime = targetQuoted.mimetype || targetQuoted.mediaType || "";
-        await reply("⏳ Downloading media...");
+        await reply("⚡ TIGER MD AI is processing your request...");
 
-        let mediaBuffer = await targetQuoted.download();
-        if (!mediaBuffer) {
-            return reply("❌ Failed to download media!");
-        }
-
-        let ext = '.bin';
-        if (mime.includes('image')) ext = '.jpg';
-        else if (mime.includes('video')) ext = '.mp4';
-        else if (mime.includes('audio')) ext = '.mp3';
-        else if (targetQuoted.fileName) {
-            ext = path.extname(targetQuoted.fileName) || '.bin';
-        }
-
-        filePath = `./temp_${Date.now()}${ext}`;
-        fs.writeFileSync(filePath, mediaBuffer);
-
-        await reply("☁️ Uploading to server...");
-
-        // Catbox के लिए FormData और fetch का सही तरीका (412 एरर नहीं आएगा)
-        const form = new FormData();
-        form.append('reqtype', 'fileupload');
-        form.append('fileToUpload', fs.createReadStream(filePath));
-
-        const response = await fetch('https://catbox.moe/user/api.php', {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
-            body: form,
-            headers: form.getHeaders()
+            headers: {
+                'Authorization': 'Bearer YOUR_GROQ_API_KEY_HERE',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are TIGER MD AI, an elite software developer and master assistant created by BAGGA SHER MD. Provide clean, production-ready, error-free JavaScript/Node.js code and accurate technical solutions instantly. Format code blocks properly for WhatsApp."
+                    },
+                    {
+                        role: "user",
+                        content: q
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 4096
+            })
         });
 
-        let directUrl = await response.text();
-        directUrl = directUrl ? directUrl.trim() : "";
-
-        if (!directUrl.startsWith('http')) {
-            throw new Error("Upload failed, invalid response from server.");
+        const result = await response.json();
+        
+        if (!result.choices || !result.choices[0]) {
+            throw new Error("API response error or limit reached.");
         }
 
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
+        let aiAnswer = result.choices[0].message.content;
 
-        let responseText = `🔗 *MEDIA URL GENERATED*\n\n` +
-                           `📁 *Link:* ${directUrl}\n\n` +
-                           `🔥 *TIGER MD* \n👑 *Owner:* BAGGA SHER MD`;
+        let responseText = `🤖 *TIGER MD ADVANCED AI*\n\n${aiAnswer}\n\n` +
+                           `🔥 *POWERED BY BAGGA SHER MD*`;
 
         return await conn.sendMessage(from, { text: responseText }, { quoted: mek });
 
     } catch (e) {
-        if (filePath && fs.existsSync(filePath)) {
-            try { fs.unlinkSync(filePath); } catch (err) {}
-        }
-        console.error('Error in tourl command:', e);
-        return reply(`❌ Upload failed: ${e.message}`);
+        console.error('Error in AI command:', e);
+        return reply(`❌ Error: ${e.message}\n\nBhai, API key check kar ya dobara try kar!`);
     }
 });
