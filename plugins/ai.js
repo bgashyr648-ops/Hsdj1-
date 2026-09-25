@@ -2,6 +2,7 @@ const { cmd } = require('../command');
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
+const path = require('path');
 
 cmd({
     pattern: "tourl",
@@ -12,29 +13,44 @@ cmd({
     filename: __filename
 },
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => {
-    let mediaStream = null;
+    let filePath = null;
     try {
-        const quotedMsg = mek.msg?.contextInfo?.quotedMessage;
-        if (!quotedMsg) {
-            return reply("❌ Please reply to a video, audio, or image to use this command!");
+        const isQuotedImage = quoted && quoted.mtype === 'imageMessage';
+        const isQuotedVideo = quoted && quoted.mtype === 'videoMessage';
+        const isQuotedAudio = quoted && quoted.mtype === 'audioMessage';
+        const isQuotedDocument = quoted && quoted.mtype === 'documentMessage';
+
+        if (!isQuotedImage && !isQuotedVideo && !isQuotedAudio && !isQuotedDocument) {
+            return reply("❌ Please reply directly to an image, video, audio, or document!");
         }
 
         await reply("⏳ Downloading media, please wait...");
-        mediaStream = await conn.downloadAndSaveMediaMessage(quoted);
+
+        let mediaBuffer = await quoted.download();
         
-        if (!mediaStream) {
-            return reply("❌ Failed to download the media!");
+        if (!mediaBuffer) {
+            return reply("❌ Failed to download media buffer!");
         }
+
+        let ext = '.jpg';
+        if (isQuotedVideo) ext = '.mp4';
+        else if (isQuotedAudio) ext = '.mp3';
+        else if (isQuotedDocument && quoted.msg && quoted.msg.fileName) {
+            ext = path.extname(quoted.msg.fileName) || '.bin';
+        }
+
+        filePath = `./temp_${Date.now()}${ext}`;
+        fs.writeFileSync(filePath, mediaBuffer);
 
         await reply("☁️ Uploading file to secure server...");
 
         const form = new FormData();
         form.append('reqtype', 'fileupload');
-        form.append('fileToUpload', fs.createReadStream(mediaStream));
+        form.append('fileToUpload', fs.createReadStream(filePath));
 
         const uploadResponse = await axios.post('https://catbox.moe/user/api.php', form, {
             headers: { ...form.getHeaders() },
-            timeout: 60000 // 60 seconds timeout for larger videos
+            timeout: 60000 
         });
 
         let directUrl = uploadResponse.data ? uploadResponse.data.trim() : "";
@@ -43,9 +59,8 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => 
             throw new Error("Invalid URL received from server.");
         }
 
-        // Clean up temporary local file
-        if (fs.existsSync(mediaStream)) {
-            fs.unlinkSync(mediaStream);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
         }
 
         let responseText = `🔗 *MEDIA URL GENERATED*\n\n` +
@@ -55,15 +70,9 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => 
         return await conn.sendMessage(from, { text: responseText }, { quoted: mek });
 
     } catch (e) {
-        // Ensure local temporary file is cleaned up even if an error occurs to prevent crashes
-        if (mediaStream && fs.existsSync(mediaStream)) {
-            try {
-                fs.unlinkSync(mediaStream);
-            } catch (err) {
-                console.error("Cleanup error:", err);
-            }
+        if (filePath && fs.existsSync(filePath)) {
+            try { fs.unlinkSync(filePath); } catch (err) {}
         }
-        
         console.error('Error in tourl command:', e);
         return reply(`❌ Upload failed: ${e.message}`);
     }
