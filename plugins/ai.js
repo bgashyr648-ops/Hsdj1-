@@ -1,16 +1,17 @@
-Const { cmd } = require('../command');
+const { cmd } = require('../command');
 
 cmd({
     pattern: "baga",
-    alias: ["bagasher", "mdvideo"],
-    desc: "BAGGA SHER MD working videos command",
+    alias: ["bagasher", "mdvideo", "sadvideo"],
+    desc: "BAGGA SHER MD sad videos command",
     category: "owner",
-    react: "🔥",
+    react: "🥺",
     filename: __filename
 },
 async (conn, mek, m, { from, q, reply }) => {
     try {
-        await reply("🔥 BAGGA SHER MD video bhej raha hai...");
+        console.log("🥺 BAGA sad command successfully triggered!");
+        await reply("💔 BAGGA SHER MD sad video bhej raha hai...");
 
         const autoVideoLinks = [
             "https://files.catbox.moe/mh3gpw.mp4",
@@ -54,7 +55,7 @@ async (conn, mek, m, { from, q, reply }) => {
             from,
             {
                 video: { url: videoUrl },
-                caption: `🎬 *BAGGA SHER MD SPECIAL*\n🔥 *POWERED BY TIGER MD*`
+                caption: `💔 *BAGGA SHER MD SAD VIBES*\n🥺 *POWERED BY TIGER MD*`
             },
             { quoted: mek }
         );
