@@ -1,13 +1,10 @@
 //---------------------------------------------------------------------------
 //           TIGER-MD - YOUTUBE DOWNLOADER
 //---------------------------------------------------------------------------
-//  🚀 DOWNLOAD VIDEOS AND AUDIO USING DIRECT APIS
-//---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
 const axios = require('axios');
 
-// Small caps font helper
 const toSmallCaps = (text) => {
     const map = {
         'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ',
@@ -17,15 +14,11 @@ const toSmallCaps = (text) => {
     return text.split('').map(c => map[c.toLowerCase()] || c).join('');
 };
 
-// Helper to extract YouTube video ID
 function getVideoId(url) {
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
 }
 
-// ============================================
-// COMMAND: play (Audio Only) - With Fallback
-// ============================================
 cmd({
     pattern: "play",
     alias: ["song", "music", "audio"],
@@ -37,7 +30,6 @@ cmd({
     try {
         if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
-        // YouTube search
         const yts = require('yt-search');
         
         let url = text;
@@ -114,9 +106,6 @@ cmd({
     }
 });
 
-// ============================================
-// COMMAND: video (Video Download) - With Fallback
-// ============================================
 cmd({
     pattern: "video",
     alias: ["ytv", "ytmp4", "vd"],
@@ -199,9 +188,6 @@ cmd({
     }
 });
 
-// ============================================
-// COMMAND: song (Interactive - Choose Audio/Video)
-// ============================================
 cmd({
     pattern: "song",
     alias: ["yt", "music", "ytdl"],
@@ -213,9 +199,7 @@ cmd({
     try {
         if (!text) return reply("🎶 Please provide a YouTube video name or link.\n\nExample: `.song Alone - Alan Walker`");
 
-        // YouTube search
         const yts = require('yt-search');
-        
         let vid = null;
 
         if (text.startsWith('http://') || text.startsWith('https://')) {
@@ -369,9 +353,6 @@ cmd({
     }
 });
 
-// ============================================
-// COMMAND: yts (Search)
-// ============================================
 cmd({
     pattern: "yts",
     alias: ["ytsearch", "searchyt"],
@@ -386,7 +367,6 @@ async (conn, mek, m, { from, text, reply }) => {
         if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
         const yts = require('yt-search');
-        
         const search = await yts(text);
         
         if (!search.videos || !search.videos.length) {
