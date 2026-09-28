@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER (4 APIS FALLBACK SYSTEM)
+//           TIGER-MD - YOUTUBE DOWNLOADER (NO ERROR / MULTI-API FALLBACK)
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
@@ -65,14 +65,14 @@ cmd({
         let audioUrl = null;
         let success = false;
 
-        const audioAPIs = [
+        const apis = [
             `https://xjawadtech.vercel.app/yta?url=${encodeURIComponent(url)}`,
             `https://api.savetube.me/download?url=${encodeURIComponent(url)}`,
             `https://savetube-api.top/download?url=${encodeURIComponent(url)}`,
             `https://yt-dl.savetube.vip/download?url=${encodeURIComponent(url)}`
         ];
 
-        for (const apiUrl of audioAPIs) {
+        for (const apiUrl of apis) {
             if (!success) {
                 try {
                     const response = await axios.get(apiUrl, { timeout: 12000 });
@@ -94,7 +94,7 @@ cmd({
         }
 
         if (!success) {
-            return reply("❌ Failed to fetch audio download link from all APIs! Try again later.");
+            return reply("❌ All APIs failed to respond. Please try again later!");
         }
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
@@ -150,14 +150,14 @@ cmd({
         let videoUrl = null;
         let success = false;
 
-        const videoAPIs = [
+        const apis = [
             `https://xjawadtech.vercel.app/ytv?url=${encodeURIComponent(url)}`,
             `https://api.savetube.me/download?url=${encodeURIComponent(url)}`,
             `https://savetube-api.top/download?url=${encodeURIComponent(url)}`,
             `https://yt-dl.savetube.vip/download?url=${encodeURIComponent(url)}`
         ];
 
-        for (const apiUrl of videoAPIs) {
+        for (const apiUrl of apis) {
             if (!success) {
                 try {
                     const response = await axios.get(apiUrl, { timeout: 12000 });
@@ -177,7 +177,7 @@ cmd({
         }
 
         if (!success) {
-            return reply("❌ Failed to fetch video download link from all APIs! Try again later.");
+            return reply("❌ All APIs failed to respond. Please try again later!");
         }
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
@@ -281,7 +281,7 @@ cmd({
                     }
 
                     if (!success || !downloadUrl) {
-                        return await conn.sendMessage(from, { text: "❌ All APIs failed to download!" }, { quoted: received });
+                        return await conn.sendMessage(from, { text: "❌ Failed to fetch download link from APIs!" }, { quoted: received });
                     }
 
                     if (type === "mp3") {
