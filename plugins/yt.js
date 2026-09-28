@@ -1,10 +1,11 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER (NO ERROR / MULTI-API FALLBACK)
+//           TIGER-MD - YOUTUBE DOWNLOADER
+//---------------------------------------------------------------------------
+//  🚀 DOWNLOAD VIDEOS AND AUDIO USING DIRECT APIS
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
 const axios = require('axios');
-const yts = require('yt-search');
 
 // Small caps font helper
 const toSmallCaps = (text) => {
@@ -23,7 +24,7 @@ function getVideoId(url) {
 }
 
 // ============================================
-// COMMAND: play (Audio Only)
+// COMMAND: play (Audio Only) - With Fallback
 // ============================================
 cmd({
     pattern: "play",
@@ -36,6 +37,9 @@ cmd({
     try {
         if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
+        // YouTube search
+        const yts = require('yt-search');
+        
         let url = text;
         let vid = null;
 
@@ -45,8 +49,8 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            const searchRes = await yts({ videoId: videoId });
-            vid = searchRes;
+            const searchFromUrl = await yts({ videoId: videoId });
+            vid = searchFromUrl;
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -60,23 +64,26 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
+            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() \vert{}\vert{} 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         let audioUrl = null;
         let success = false;
 
-        const apis = [
-            `https://xjawadtech.vercel.app/yta?url=${encodeURIComponent(url)}`,
-            `https://api.savetube.me/download?url=${encodeURIComponent(url)}`,
-            `https://savetube-api.top/download?url=${encodeURIComponent(url)}`,
-            `https://yt-dl.savetube.vip/download?url=${encodeURIComponent(url)}`
+        const audioAPIs = [
+            `https://xjawadtech.vercel.app/yta1?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta2?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta3?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta4?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta5?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta6?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/yta7?url=${encodeURIComponent(url)}`
         ];
 
-        for (const apiUrl of apis) {
+        for (const apiUrl of audioAPIs) {
             if (!success) {
                 try {
-                    const response = await axios.get(apiUrl, { timeout: 12000 });
+                    const response = await axios.get(apiUrl, { timeout: 15000 });
                     audioUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
                     if (audioUrl) {
                         await conn.sendMessage(from, {
@@ -95,7 +102,7 @@ cmd({
         }
 
         if (!success) {
-            return reply("❌ All APIs failed to respond. Please try again later!");
+            return reply("❌ All download sources failed! Try again later.");
         }
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
@@ -108,7 +115,7 @@ cmd({
 });
 
 // ============================================
-// COMMAND: video (Video Download)
+// COMMAND: video (Video Download) - With Fallback
 // ============================================
 cmd({
     pattern: "video",
@@ -121,6 +128,8 @@ cmd({
     try {
         if (!text) return reply("🎥 Please provide a video name or link!\n\nExample: `.video Alone Marshmello`");
 
+        const yts = require('yt-search');
+        
         let url = text;
         let vid = null;
 
@@ -130,8 +139,8 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            const searchRes = await yts({ videoId: videoId });
-            vid = searchRes;
+            const searchFromUrl = await yts({ videoId: videoId });
+            vid = searchFromUrl;
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -145,23 +154,23 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
+            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name \vert{}\vert{} 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         let videoUrl = null;
         let success = false;
 
-        const apis = [
-            `https://xjawadtech.vercel.app/ytv?url=${encodeURIComponent(url)}`,
-            `https://api.savetube.me/download?url=${encodeURIComponent(url)}`,
-            `https://savetube-api.top/download?url=${encodeURIComponent(url)}`,
-            `https://yt-dl.savetube.vip/download?url=${encodeURIComponent(url)}`
+        const videoAPIs = [
+            `https://xjawadtech.vercel.app/ytv1?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/ytv2?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/ytv3?url=${encodeURIComponent(url)}`,
+            `https://xjawadtech.vercel.app/ytv4?url=${encodeURIComponent(url)}`
         ];
 
-        for (const apiUrl of apis) {
+        for (const apiUrl of videoAPIs) {
             if (!success) {
                 try {
-                    const response = await axios.get(apiUrl, { timeout: 12000 });
+                    const response = await axios.get(apiUrl, { timeout: 15000 });
                     videoUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
                     if (videoUrl) {
                         await conn.sendMessage(from, {
@@ -178,7 +187,7 @@ cmd({
         }
 
         if (!success) {
-            return reply("❌ All APIs failed to respond. Please try again later!");
+            return reply("❌ All video sources failed! Try again later.");
         }
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
@@ -202,8 +211,11 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
-        if (!text) return reply("🎶 Please provide a YouTube video name or link.");
+        if (!text) return reply("🎶 Please provide a YouTube video name or link.\n\nExample: `.song Alone - Alan Walker`");
 
+        // YouTube search
+        const yts = require('yt-search');
+        
         let vid = null;
 
         if (text.startsWith('http://') || text.startsWith('https://')) {
@@ -212,8 +224,7 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            const searchRes = await yts({ videoId: videoId });
-            vid = searchRes;
+            vid = await yts({ videoId: videoId });
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -228,6 +239,7 @@ cmd({
 *├▢ 🎬 Title:* ${vid.title}
 *├▢ 📺 Channel:* ${vid.author?.name || 'Unknown'}
 *├▢ ⏰ Duration:* ${vid.timestamp}
+*├▢ 👀 Views:* ${vid.views?.toLocaleString() || 'N/A'}
 *╰───────────────────⊷*
 *╭───⬡ ${toSmallCaps('Select Format')} ⬡───*
 *┋ ⬡ 1* 🎧 ${toSmallCaps('Audio (MP3)')}
@@ -256,47 +268,83 @@ cmd({
 
                 if (selected === "1" || selected === "2") {
                     const type = selected === "1" ? "mp3" : "mp4";
-                    let downloadUrl = null;
-                    let success = false;
-
-                    const apis = [
-                        `https://xjawadtech.vercel.app/${type === "mp3" ? "yta" : "ytv"}?url=${encodeURIComponent(vid.url)}`,
-                        `https://api.savetube.me/download?url=${encodeURIComponent(vid.url)}`,
-                        `https://savetube-api.top/download?url=${encodeURIComponent(vid.url)}`,
-                        `https://yt-dl.savetube.vip/download?url=${encodeURIComponent(vid.url)}`
-                    ];
-
-                    for (const apiUrl of apis) {
-                        if (!success) {
-                            try {
-                                const response = await axios.get(apiUrl, { timeout: 12000 });
-                                downloadUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
-                                if (downloadUrl) {
-                                    success = true;
-                                    break;
-                                }
-                            } catch (e) {
-                                continue;
-                            }
-                        }
-                    }
-
-                    if (!success || !downloadUrl) {
-                        return await conn.sendMessage(from, { text: "❌ Failed to fetch download link from APIs!" }, { quoted: received });
-                    }
 
                     if (type === "mp3") {
-                        await conn.sendMessage(from, {
-                            audio: { url: downloadUrl },
-                            mimetype: "audio/mpeg",
-                            fileName: `${vid.title}.mp3`,
-                            ptt: false
-                        }, { quoted: received });
+                        let audioUrl = null;
+                        let success = false;
+
+                        const audioAPIs = [
+                            `https://xjawadtech.vercel.app/yta1?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta2?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta3?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta4?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta5?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta6?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/yta7?url=${encodeURIComponent(vid.url)}`
+                        ];
+
+                        for (const apiUrl of audioAPIs) {
+                            if (!success) {
+                                try {
+                                    const response = await axios.get(apiUrl, { timeout: 15000 });
+                                    audioUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                                    if (audioUrl) {
+                                        await conn.sendMessage(from, {
+                                            audio: { url: audioUrl },
+                                            mimetype: "audio/mpeg",
+                                            fileName: `${vid.title}.mp3`,
+                                            ptt: false
+                                        }, { quoted: received });
+                                        success = true;
+                                        break;
+                                    }
+                                } catch (e) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        if (!success) {
+                            return await conn.sendMessage(from, { 
+                                text: "❌ All audio sources failed! Try again later." 
+                            }, { quoted: received });
+                        }
+
                     } else {
-                        await conn.sendMessage(from, {
-                            video: { url: downloadUrl },
-                            caption: `🎬 *${vid.title}*\n\n> Powered by TIGER-MD`
-                        }, { quoted: received });
+                        let videoUrl = null;
+                        let success = false;
+
+                        const videoAPIs = [
+                            `https://xjawadtech.vercel.app/ytv1?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/ytv2?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/ytv3?url=${encodeURIComponent(vid.url)}`,
+                            `https://xjawadtech.vercel.app/ytv4?url=${encodeURIComponent(vid.url)}`
+                        ];
+
+                        for (const apiUrl of videoAPIs) {
+                            if (!success) {
+                                try {
+                                    const response = await axios.get(apiUrl, { timeout: 15000 });
+                                    videoUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                                    if (videoUrl) {
+                                        await conn.sendMessage(from, {
+                                            video: { url: videoUrl },
+                                            caption: `🎬 *${vid.title}*\n\n> Powered by TIGER-MD`
+                                        }, { quoted: received });
+                                        success = true;
+                                        break;
+                                    }
+                                } catch (e) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        if (!success) {
+                            return await conn.sendMessage(from, { 
+                                text: "❌ All video sources failed! Try again later." 
+                            }, { quoted: received });
+                        }
                     }
 
                     await conn.sendMessage(from, { react: { text: '✅', key: received.key } });
@@ -309,7 +357,10 @@ cmd({
         };
         
         conn.ev.on("messages.upsert", songListener);
-        setTimeout(() => { conn.ev.off("messages.upsert", songListener); }, 20000);
+        
+        setTimeout(() => {
+            conn.ev.off("messages.upsert", songListener);
+        }, 20000);
 
     } catch (e) {
         console.error(e);
@@ -332,8 +383,10 @@ cmd({
 },
 async (conn, mek, m, { from, text, reply }) => {
     try {
-        if (!text) return reply('*Please provide search words!*');
+        if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
+        const yts = require('yt-search');
+        
         const search = await yts(text);
         
         if (!search.videos || !search.videos.length) {
@@ -341,13 +394,14 @@ async (conn, mek, m, { from, text, reply }) => {
         }
         
         const results = search.videos.slice(0, 10);
+        
         let mesaj = `*╭┈───〔 ${toSmallCaps('YouTube Search')} 〕┈───⊷*\n`;
         mesaj += `*├▢ 🔎 Query:* ${text}\n`;
         mesaj += `*├▢ 📊 Results:* ${search.videos.length}\n`;
         mesaj += `*╰───────────────────⊷*\n\n`;
 
         results.forEach((video, i) => {
-            mesaj += `*${i + 1}. ${video.title}*\n`;
+            mesaj += `*${i + 1}.${video.title}*\n`;
             mesaj += `*├▢ 🔗 URL:* ${video.url}\n`;
             mesaj += `*├▢ ⏱️ Duration:* ${video.timestamp}\n`;
             mesaj += `*├▢ 👀 Views:* ${video.views?.toLocaleString() || 'N/A'}\n`;
@@ -360,8 +414,9 @@ async (conn, mek, m, { from, text, reply }) => {
         mesaj += `*╰───────────────────⊷*`;
         
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
+
     } catch (e) {
         console.error('Error in yts command:', e);
-        reply(`*Error occurred while searching!*`);
+        reply(`*Error occurred while searching!*\n\`\`\`${e.message}\`\`\``);
     }
 });
