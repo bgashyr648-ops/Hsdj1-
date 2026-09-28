@@ -4,6 +4,7 @@
 
 const { cmd } = require('../command');
 const axios = require('axios');
+const yts = require('yt-search');
 
 // Small caps font helper
 const toSmallCaps = (text) => {
@@ -35,7 +36,6 @@ cmd({
     try {
         if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
-        const yts = require('yt-search');
         let url = text;
         let vid = null;
 
@@ -45,7 +45,8 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            vid = await yts({ videoId: videoId });
+            const searchRes = await yts({ videoId: videoId });
+            vid = searchRes;
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -120,7 +121,6 @@ cmd({
     try {
         if (!text) return reply("🎥 Please provide a video name or link!\n\nExample: `.video Alone Marshmello`");
 
-        const yts = require('yt-search');
         let url = text;
         let vid = null;
 
@@ -130,7 +130,8 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            vid = await yts({ videoId: videoId });
+            const searchRes = await yts({ videoId: videoId });
+            vid = searchRes;
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -203,7 +204,6 @@ cmd({
     try {
         if (!text) return reply("🎶 Please provide a YouTube video name or link.");
 
-        const yts = require('yt-search');
         let vid = null;
 
         if (text.startsWith('http://') || text.startsWith('https://')) {
@@ -212,7 +212,8 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            vid = await yts({ videoId: videoId });
+            const searchRes = await yts({ videoId: videoId });
+            vid = searchRes;
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -333,7 +334,6 @@ async (conn, mek, m, { from, text, reply }) => {
     try {
         if (!text) return reply('*Please provide search words!*');
 
-        const yts = require('yt-search');
         const search = await yts(text);
         
         if (!search.videos || !search.videos.length) {
