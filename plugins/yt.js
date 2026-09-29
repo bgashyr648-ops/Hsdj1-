@@ -43,19 +43,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://xjawadtech.vercel.app/yta1?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://api.siputzx.my.id/api/d/ytmp3?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl, { timeout: 25000 });
         
-        const response = await axios.get(apiUrl, { 
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'Referer': 'https://xjawadtech.vercel.app/',
-                'Origin': 'https://xjawadtech.vercel.app',
-                'Accept': 'application/json, text/plain, */*'
-            }, 
-            timeout: 25000 
-        });
-
-        const audioUrl = response.data?.download?.url || response.data?.url || response.data?.result || response.data?.dl;
+        const audioUrl = response.data?.data?.dl || response.data?.download?.url || response.data?.url;
 
         if (!audioUrl) return reply("Error: Download link not found in API response.");
 
@@ -111,19 +102,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://xjawadtech.vercel.app/ytv1?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://api.siputzx.my.id/api/d/ytmp4?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl, { timeout: 25000 });
         
-        const response = await axios.get(apiUrl, { 
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                'Referer': 'https://xjawadtech.vercel.app/',
-                'Origin': 'https://xjawadtech.vercel.app',
-                'Accept': 'application/json, text/plain, */*'
-            }, 
-            timeout: 25000 
-        });
-
-        const videoUrl = response.data?.download?.url || response.data?.url || response.data?.result || response.data?.dl;
+        const videoUrl = response.data?.data?.dl || response.data?.download?.url || response.data?.url;
 
         if (!videoUrl) return reply("Error: Download link not found in API response.");
 
