@@ -1,11 +1,8 @@
 const { cmd } = require('../command');
-const axios = require('axios');
 const yts = require('yt-search');
-
-function getVideoId(url) {
-    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-    return match ? match[1] : null;
-}
+const ytdl = require('ytdl-core');
+const fs = require('fs');
+const path = require('path');
 
 cmd({
     pattern: "play",
@@ -17,51 +14,48 @@ cmd({
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
         if (!text) return reply("Error: Provide a query or URL.");
-        let url = text;
-        let vid = null;
-
-        if (text.startsWith('http://') || text.startsWith('https://')) {
-            const videoId = getVideoId(text);
-            if (!videoId) return reply("Error: Invalid URL.");
-            vid = await yts({ videoId: videoId });
-            url = vid.url;
-        } else {
-            const search = await yts(text);
-            if (!search.videos || !search.videos.length) {
-                return reply("Error: No results found.");
-            } else {
-                vid = search.videos[0];
-                url = vid.url;
-            }
+        
+        let search = await yts(text);
+        if (!search.videos || search.videos.length === 0) {
+            return reply("Error: No results found.");
         }
-
-        const title = vid ? vid.title : text;
-        const thumbnail = vid ? vid.thumbnail : 'https://i.imgur.com/J82U2Fv.jpg';
+        
+        let vid = search.videos[0];
+        let url = vid.url;
+        let title = vid.title;
+        let thumbnail = vid.thumbnail;
 
         await conn.sendMessage(from, { 
             image: { url: thumbnail }, 
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://api.vyturex.com/ytmp3?url=${encodeURIComponent(url)}`;
-        const response = await axios.get(apiUrl, { timeout: 25000 });
+        const audioPath = path.join(__dirname, `${Date.now()}.mp3`);
+        let stream = ytdl(url, { quality: 'highestaudio', filter: 'audioonly' });
         
-        const audioUrl = response.data?.result?.download?.url || response.data?.dl || response.data?.url;
+        stream.pipe(fs.createWriteStream(audioPath));
 
-        if (!audioUrl) return reply("Error: Download link not found in API response.");
+        stream.on('end', async () => {
+            await conn.sendMessage(from, { 
+                audio: { url: audioPath }, 
+                mimetype: "audio/mpeg", 
+                fileName: `${title}.mp3`, 
+                ptt: false 
+            }, { quoted: mek });
 
-        await conn.sendMessage(from, { 
-            audio: { url: audioUrl }, 
-            mimetype: "audio/mpeg", 
-            fileName: `${title}.mp3`, 
-            ptt: false 
-        }, { quoted: mek });
+            await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+            try { fs.unlinkSync(audioPath); } catch (e) {}
+        });
 
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+        stream.on('error', (err) => {
+            console.error("YTDL ERROR:", err);
+            reply("Error: Failed to download audio.");
+            try { fs.unlinkSync(audioPath); } catch (e) {}
+        });
 
     } catch (err) {
         console.error("PLAY ERROR:", err);
-        reply(`Error: ${err.response?.status || err.message}`);
+        reply(`Error: ${err.message}`);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
@@ -76,49 +70,46 @@ cmd({
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
         if (!text) return reply("Error: Provide a query or URL.");
-        let url = text;
-        let vid = null;
-
-        if (text.startsWith('http://') || text.startsWith('https://')) {
-            const videoId = getVideoId(text);
-            if (!videoId) return reply("Error: Invalid URL.");
-            vid = await yts({ videoId: videoId });
-            url = vid.url;
-        } else {
-            const search = await yts(text);
-            if (!search.videos || !search.videos.length) {
-                return reply("Error: No results found.");
-            } else {
-                vid = search.videos[0];
-                url = vid.url;
-            }
+        
+        let search = await yts(text);
+        if (!search.videos || search.videos.length === 0) {
+            return reply("Error: No results found.");
         }
-
-        const title = vid ? vid.title : text;
-        const thumbnail = vid ? vid.thumbnail : 'https://i.imgur.com/J82U2Fv.jpg';
+        
+        let vid = search.videos[0];
+        let url = vid.url;
+        let title = vid.title;
+        let thumbnail = vid.thumbnail;
 
         await conn.sendMessage(from, { 
             image: { url: thumbnail }, 
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://api.vyturex.com/ytmp4?url=${encodeURIComponent(url)}`;
-        const response = await axios.get(apiUrl, { timeout: 25000 });
+        const videoPath = path.join(__dirname, `${Date.now()}.mp4`);
+        let stream = ytdl(url, { quality: 'highest' });
         
-        const videoUrl = response.data?.result?.download?.url || response.data?.dl || response.data?.url;
+        stream.pipe(fs.createWriteStream(videoPath));
 
-        if (!videoUrl) return reply("Error: Download link not found in API response.");
+        stream.on('end', async () => {
+            await conn.sendMessage(from, { 
+                video: { url: videoPath }, 
+                caption: `Title: ${title}` 
+            }, { quoted: mek });
 
-        await conn.sendMessage(from, { 
-            video: { url: videoUrl }, 
-            caption: `Title: ${title}` 
-        }, { quoted: mek });
+            await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+            try { fs.unlinkSync(videoPath); } catch (e) {}
+        });
 
-        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+        stream.on('error', (err) => {
+            console.error("YTDL VIDEO ERROR:", err);
+            reply("Error: Failed to download video.");
+            try { fs.unlinkSync(videoPath); } catch (e) {}
+        });
 
     } catch (e) {
         console.error("VIDEO ERROR:", e);
-        reply(`Error: ${e.response?.status || e.message}`);
+        reply(`Error: ${e.message}`);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
