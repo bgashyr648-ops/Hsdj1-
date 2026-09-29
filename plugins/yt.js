@@ -1,8 +1,6 @@
 const { cmd } = require('../command');
+const axios = require('axios');
 const yts = require('yt-search');
-const ytdl = require('ytdl-core');
-const fs = require('fs');
-const path = require('path');
 
 cmd({
     pattern: "play",
@@ -16,11 +14,9 @@ cmd({
         if (!text) return reply("Error: Provide a query or URL.");
         
         let search = await yts(text);
-        if (!search.videos || search.videos.length === 0) {
-            return reply("Error: No results found.");
-        }
-        
         let vid = search.videos[0];
+        if (!vid) return reply("Error: No results found.");
+
         let url = vid.url;
         let title = vid.title;
         let thumbnail = vid.thumbnail;
@@ -30,28 +26,21 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const audioPath = path.join(__dirname, `${Date.now()}.mp3`);
-        let stream = ytdl(url, { quality: 'highestaudio', filter: 'audioonly' });
+        const apiUrl = `https://apis.davidcyriltech.my.id/youtube/mp3?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl, { timeout: 30000 });
         
-        stream.pipe(fs.createWriteStream(audioPath));
+        const audioUrl = response.data?.result?.downloadUrl || response.data?.downloadUrl || response.data?.url;
 
-        stream.on('end', async () => {
-            await conn.sendMessage(from, { 
-                audio: { url: audioPath }, 
-                mimetype: "audio/mpeg", 
-                fileName: `${title}.mp3`, 
-                ptt: false 
-            }, { quoted: mek });
+        if (!audioUrl) return reply("Error: Download link not found.");
 
-            await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-            try { fs.unlinkSync(audioPath); } catch (e) {}
-        });
+        await conn.sendMessage(from, { 
+            audio: { url: audioUrl }, 
+            mimetype: "audio/mpeg", 
+            fileName: `${title}.mp3`, 
+            ptt: false 
+        }, { quoted: mek });
 
-        stream.on('error', (err) => {
-            console.error("YTDL ERROR:", err);
-            reply("Error: Failed to download audio.");
-            try { fs.unlinkSync(audioPath); } catch (e) {}
-        });
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (err) {
         console.error("PLAY ERROR:", err);
@@ -72,11 +61,9 @@ cmd({
         if (!text) return reply("Error: Provide a query or URL.");
         
         let search = await yts(text);
-        if (!search.videos || search.videos.length === 0) {
-            return reply("Error: No results found.");
-        }
-        
         let vid = search.videos[0];
+        if (!vid) return reply("Error: No results found.");
+
         let url = vid.url;
         let title = vid.title;
         let thumbnail = vid.thumbnail;
@@ -86,26 +73,19 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const videoPath = path.join(__dirname, `${Date.now()}.mp4`);
-        let stream = ytdl(url, { quality: 'highest' });
+        const apiUrl = `https://apis.davidcyriltech.my.id/youtube/mp4?url=${encodeURIComponent(url)}`;
+        const response = await axios.get(apiUrl, { timeout: 30000 });
         
-        stream.pipe(fs.createWriteStream(videoPath));
+        const videoUrl = response.data?.result?.downloadUrl || response.data?.downloadUrl || response.data?.url;
 
-        stream.on('end', async () => {
-            await conn.sendMessage(from, { 
-                video: { url: videoPath }, 
-                caption: `Title: ${title}` 
-            }, { quoted: mek });
+        if (!videoUrl) return reply("Error: Download link not found.");
 
-            await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
-            try { fs.unlinkSync(videoPath); } catch (e) {}
-        });
+        await conn.sendMessage(from, { 
+            video: { url: videoUrl }, 
+            caption: `Title: ${title}` 
+        }, { quoted: mek });
 
-        stream.on('error', (err) => {
-            console.error("YTDL VIDEO ERROR:", err);
-            reply("Error: Failed to download video.");
-            try { fs.unlinkSync(videoPath); } catch (e) {}
-        });
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
     } catch (e) {
         console.error("VIDEO ERROR:", e);
