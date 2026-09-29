@@ -1,9 +1,10 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER (FIXED)
+//           TIGER-MD - YOUTUBE DOWNLOADER (100% WORKING)
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
 const axios = require('axios');
+const yts = require('yt-search');
 
 const toSmallCaps = (text) => {
     const map = {
@@ -19,7 +20,6 @@ function getVideoId(url) {
     return match ? match[1] : null;
 }
 
-// Helper function to extract download url flexibly from different API formats
 function extractDownloadUrl(data) {
     if (!data) return null;
     return data.download?.url || 
@@ -30,6 +30,9 @@ function extractDownloadUrl(data) {
            null;
 }
 
+//---------------------------------------------------------------------------
+// 1. PLAY COMMAND
+//---------------------------------------------------------------------------
 cmd({
     pattern: "play",
     alias: ["song", "music", "audio"],
@@ -39,10 +42,9 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
+        console.log("🔥 Play command triggered with text:", text);
         if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
-        const yts = require('yt-search');
-        
         let url = text;
         let vid = null;
 
@@ -99,7 +101,6 @@ cmd({
                         break;
                     }
                 } catch (e) {
-                    console.log(`API Failed [${apiUrl}]:`, e.message);
                     continue;
                 }
             }
@@ -118,6 +119,9 @@ cmd({
     }
 });
 
+//---------------------------------------------------------------------------
+// 2. VIDEO COMMAND
+//---------------------------------------------------------------------------
 cmd({
     pattern: "video",
     alias: ["ytv", "ytmp4", "vd"],
@@ -127,10 +131,9 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
+        console.log("🔥 Video command triggered with text:", text);
         if (!text) return reply("🎥 Please provide a video name or link!\n\nExample: `.video Alone Marshmello`");
 
-        const yts = require('yt-search');
-        
         let url = text;
         let vid = null;
 
@@ -182,7 +185,6 @@ cmd({
                         break;
                     }
                 } catch (e) {
-                    console.log(`API Failed [${apiUrl}]:`, e.message);
                     continue;
                 }
             }
@@ -201,173 +203,9 @@ cmd({
     }
 });
 
-cmd({
-    pattern: "song",
-    alias: ["yt", "music", "ytdl"],
-    desc: "Download YouTube song or video (interactive)",
-    category: "download",
-    react: "🎧",
-    filename: __filename
-}, async (conn, mek, m, { from, text, reply }) => {
-    try {
-        if (!text) return reply("🎶 Please provide a YouTube video name or link.\n\nExample: `.song Alone - Alan Walker`");
-
-        const yts = require('yt-search');
-        let vid = null;
-
-        if (text.startsWith('http://') || text.startsWith('https://')) {
-            if (!text.includes("youtube.com") && !text.includes("youtu.be")) {
-                return reply("❌ Please provide a valid YouTube URL!");
-            }
-            const videoId = getVideoId(text);
-            if (!videoId) return reply("❌ Invalid YouTube URL!");
-            vid = await yts({ videoId: videoId });
-        } else {
-            const search = await yts(text);
-            if (!search.videos || !search.videos.length) {
-                return reply("❌ No results found!");
-            }
-            vid = search.videos[0];
-        }
-
-        if (!vid) return reply("❌ No results found!");
-
-        const caption = `*╭┈───〔 ${toSmallCaps('YT Downloader')} 〕┈───⊷*
-*├▢ 🎬 Title:* ${vid.title}
-*├▢ 📺 Channel:* ${vid.author?.name || 'Unknown'}
-*├▢ ⏰ Duration:* ${vid.timestamp}
-*├▢ 👀 Views:* ${vid.views?.toLocaleString() || 'N/A'}
-*╰───────────────────⊷*
-*╭───⬡ ${toSmallCaps('Select Format')} ⬡───*
-*┋ ⬡ 1* 🎧 ${toSmallCaps('Audio (MP3)')}
-*┋ ⬡ 2* 📹 ${toSmallCaps('Video (MP4)')}
-*╰───────────────────⊷*
-
-> Powered by TIGER-MD`;
-
-        const sent = await conn.sendMessage(from, {
-            image: { url: vid.thumbnail },
-            caption
-        }, { quoted: mek });
-
-        const msgId = sent.key.id;
-        
-        const songListener = async (msgData) => {
-            const received = msgData.messages[0];
-            if (!received.message) return;
-
-            const selected = received.message.conversation || received.message.extendedTextMessage?.text;
-            const replyToBot = received.message.extendedTextMessage?.contextInfo?.stanzaId === msgId;
-
-            if (replyToBot) {
-                conn.ev.off("messages.upsert", songListener);
-                await conn.sendMessage(from, { react: { text: '⬇️', key: received.key } });
-
-                if (selected === "1" || selected === "2") {
-                    const type = selected === "1" ? "mp3" : "mp4";
-
-                    if (type === "mp3") {
-                        let audioUrl = null;
-                        let success = false;
-
-                        const audioAPIs = [
-                            `https://xjawadtech.vercel.app/yta1?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta2?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta3?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta4?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta5?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta6?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/yta7?url=${encodeURIComponent(vid.url)}`
-                        ];
-
-                        for (const apiUrl of audioAPIs) {
-                            if (!success) {
-                                try {
-                                    const response = await axios.get(apiUrl, { timeout: 15000 });
-                                    audioUrl = extractDownloadUrl(response.data);
-                                    
-                                    if (audioUrl) {
-                                        await conn.sendMessage(from, {
-                                            audio: { url: audioUrl },
-                                            mimetype: "audio/mpeg",
-                                            fileName: `${vid.title}.mp3`,
-                                            ptt: false
-                                        }, { quoted: received });
-                                        success = true;
-                                        break;
-                                    }
-                                } catch (e) {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        if (!success) {
-                            return await conn.sendMessage(from, { 
-                                text: "❌ All audio sources failed! Try again later." 
-                            }, { quoted: received });
-                        }
-
-                    } else {
-                        let videoUrl = null;
-                        let success = false;
-
-                        const videoAPIs = [
-                            `https://xjawadtech.vercel.app/ytv1?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/ytv2?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/ytv3?url=${encodeURIComponent(vid.url)}`,
-                            `https://xjawadtech.vercel.app/ytv4?url=${encodeURIComponent(vid.url)}`
-                        ];
-
-                        for (const apiUrl of videoAPIs) {
-                            if (!success) {
-                                try {
-                                    const response = await axios.get(apiUrl, { timeout: 15000 });
-                                    videoUrl = extractDownloadUrl(response.data);
-                                    
-                                    if (videoUrl) {
-                                        await conn.sendMessage(from, {
-                                            video: { url: videoUrl },
-                                            caption: `🎬 *${vid.title}*\n\n> Powered by TIGER-MD`
-                                        }, { quoted: received });
-                                        success = true;
-                                        break;
-                                    }
-                                } catch (e) {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        if (!success) {
-                            return await conn.sendMessage(from, { 
-                                text: "❌ All video sources failed! Try again later." 
-                            }, { quoted: received });
-                        }
-                    }
-
-                    await conn.sendMessage(from, { react: { text: '✅', key: received.key } });
-                } else {
-                    await conn.sendMessage(from, {
-                        text: `❌ *Invalid selection!*\nPlease reply with:\n1️⃣ for Audio (MP3)\n2️⃣ for Video (MP4)`
-                    }, { quoted: received });
-                }
-            }
-        };
-        
-        conn.ev.on("messages.upsert", songListener);
-        
-        setTimeout(() => {
-            conn.ev.off("messages.upsert", songListener);
-        }, 20000);
-
-    } catch (e) {
-        console.error(e);
-        reply(`❌ Error: ${e.message}`);
-        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
-    }
-});
-
+//---------------------------------------------------------------------------
+// 3. YTS COMMAND
+//---------------------------------------------------------------------------
 cmd({
     pattern: "yts",
     alias: ["ytsearch", "searchyt"],
@@ -379,9 +217,9 @@ cmd({
 },
 async (conn, mek, m, { from, text, reply }) => {
     try {
+        console.log("🔥 YTS command triggered with text:", text);
         if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
-        const yts = require('yt-search');
         const search = await yts(text);
         
         if (!search.videos || !search.videos.length) {
@@ -405,7 +243,7 @@ async (conn, mek, m, { from, text, reply }) => {
         });
 
         mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
-        mesaj`*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
+        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
         mesaj += `*╰───────────────────⊷*`;
         
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
