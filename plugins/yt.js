@@ -44,12 +44,18 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...`
         }, { quoted: mek });
 
+        // Correct API Call fixing 401 error by handling endpoints properly
         const apiUrl = `https://xjawadtech.vercel.app/yta1?url=${encodeURIComponent(url)}`;
-        const response = await axios.get(apiUrl, { timeout: 20000 });
+        const response = await axios.get(apiUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+            },
+            timeout: 25000
+        });
         
-        const audioUrl = response.data?.download?.url;
+        const audioUrl = response.data?.download?.url || response.data?.url || response.data?.result;
 
-        if (!audioUrl) return reply("Error: Download link not found.");
+        if (!audioUrl) return reply("Error: Download link not found in API response.");
 
         await conn.sendMessage(from, {
             audio: { url: audioUrl },
@@ -62,7 +68,7 @@ cmd({
 
     } catch (err) {
         console.error("PLAY ERROR:", err);
-        reply(`Error: ${err.message}`);
+        reply(`Error: ${err.response?.status || err.message}`);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
@@ -105,11 +111,16 @@ cmd({
         }, { quoted: mek });
 
         const apiUrl = `https://xjawadtech.vercel.app/ytv1?url=${encodeURIComponent(url)}`;
-        const response = await axios.get(apiUrl, { timeout: 20000 });
+        const response = await axios.get(apiUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+            },
+            timeout: 25000
+        });
 
-        const videoUrl = response.data?.download?.url;
+        const videoUrl = response.data?.download?.url || response.data?.url || response.data?.result;
 
-        if (!videoUrl) return reply("Error: Download link not found.");
+        if (!videoUrl) return reply("Error: Download link not found in API response.");
 
         await conn.sendMessage(from, {
             video: { url: videoUrl },
@@ -120,7 +131,7 @@ cmd({
 
     } catch (e) {
         console.error("VIDEO ERROR:", e);
-        reply(`Error: ${e.message}`);
+        reply(`Error: ${e.response?.status || e.message}`);
         await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
