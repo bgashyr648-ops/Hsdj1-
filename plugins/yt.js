@@ -26,10 +26,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://apis.davidcyriltech.my.id/youtube/mp3?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://api.jawadtechxd.live/download/ytmp3?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 30000 });
         
-        const audioUrl = response.data?.result?.downloadUrl || response.data?.downloadUrl || response.data?.url;
+        const audioUrl = response.data?.download?.url || response.data?.url;
 
         if (!audioUrl) return reply("Error: Download link not found.");
 
@@ -73,10 +73,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://apis.davidcyriltech.my.id/youtube/mp4?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://api.jawadtechxd.live/download/ytmp4?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 30000 });
         
-        const videoUrl = response.data?.result?.downloadUrl || response.data?.downloadUrl || response.data?.url;
+        const videoUrl = response.data?.download?.url || response.data?.url;
 
         if (!videoUrl) return reply("Error: Download link not found.");
 
