@@ -43,10 +43,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://api.siputzx.my.id/api/d/ytmp3?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://deliriussapi-oficial.vercel.app/download/ytmp3?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 25000 });
         
-        const audioUrl = response.data?.data?.dl || response.data?.download?.url || response.data?.url;
+        const audioUrl = response.data?.data?.download?.url || response.data?.download?.url || response.data?.url;
 
         if (!audioUrl) return reply("Error: Download link not found in API response.");
 
@@ -102,10 +102,10 @@ cmd({
             caption: `Title: ${title}\nStatus: Downloading...` 
         }, { quoted: mek });
 
-        const apiUrl = `https://api.siputzx.my.id/api/d/ytmp4?url=${encodeURIComponent(url)}`;
+        const apiUrl = `https://deliriussapi-oficial.vercel.app/download/ytmp4?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 25000 });
         
-        const videoUrl = response.data?.data?.dl || response.data?.download?.url || response.data?.url;
+        const videoUrl = response.data?.data?.download?.url || response.data?.download?.url || response.data?.url;
 
         if (!videoUrl) return reply("Error: Download link not found in API response.");
 
