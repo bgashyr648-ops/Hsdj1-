@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER
+//           TIGER-MD - YOUTUBE DOWNLOADER (FIXED)
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
@@ -17,6 +17,17 @@ const toSmallCaps = (text) => {
 function getVideoId(url) {
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
+}
+
+// Helper function to extract download url flexibly from different API formats
+function extractDownloadUrl(data) {
+    if (!data) return null;
+    return data.download?.url || 
+           data.url || 
+           data.result?.url || 
+           data.result?.download || 
+           data.data?.url || 
+           null;
 }
 
 cmd({
@@ -41,8 +52,7 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            const searchFromUrl = await yts({ videoId: videoId });
-            vid = searchFromUrl;
+            vid = await yts({ videoId: videoId });
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -76,7 +86,8 @@ cmd({
             if (!success) {
                 try {
                     const response = await axios.get(apiUrl, { timeout: 15000 });
-                    audioUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                    audioUrl = extractDownloadUrl(response.data);
+                    
                     if (audioUrl) {
                         await conn.sendMessage(from, {
                             audio: { url: audioUrl },
@@ -88,6 +99,7 @@ cmd({
                         break;
                     }
                 } catch (e) {
+                    console.log(`API Failed [${apiUrl}]:`, e.message);
                     continue;
                 }
             }
@@ -128,8 +140,7 @@ cmd({
             }
             const videoId = getVideoId(text);
             if (!videoId) return reply("❌ Invalid YouTube URL!");
-            const searchFromUrl = await yts({ videoId: videoId });
-            vid = searchFromUrl;
+            vid = await yts({ videoId: videoId });
         } else {
             const search = await yts(text);
             if (!search.videos || !search.videos.length) {
@@ -160,7 +171,8 @@ cmd({
             if (!success) {
                 try {
                     const response = await axios.get(apiUrl, { timeout: 15000 });
-                    videoUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                    videoUrl = extractDownloadUrl(response.data);
+                    
                     if (videoUrl) {
                         await conn.sendMessage(from, {
                             video: { url: videoUrl },
@@ -170,6 +182,7 @@ cmd({
                         break;
                     }
                 } catch (e) {
+                    console.log(`API Failed [${apiUrl}]:`, e.message);
                     continue;
                 }
             }
@@ -271,7 +284,8 @@ cmd({
                             if (!success) {
                                 try {
                                     const response = await axios.get(apiUrl, { timeout: 15000 });
-                                    audioUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                                    audioUrl = extractDownloadUrl(response.data);
+                                    
                                     if (audioUrl) {
                                         await conn.sendMessage(from, {
                                             audio: { url: audioUrl },
@@ -309,7 +323,8 @@ cmd({
                             if (!success) {
                                 try {
                                     const response = await axios.get(apiUrl, { timeout: 15000 });
-                                    videoUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
+                                    videoUrl = extractDownloadUrl(response.data);
+                                    
                                     if (videoUrl) {
                                         await conn.sendMessage(from, {
                                             video: { url: videoUrl },
@@ -390,7 +405,7 @@ async (conn, mek, m, { from, text, reply }) => {
         });
 
         mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
-        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
+        mesaj`*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
         mesaj += `*╰───────────────────⊷*`;
         
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
