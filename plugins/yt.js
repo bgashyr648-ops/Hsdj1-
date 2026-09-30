@@ -30,6 +30,7 @@ cmd({
             if (!search.videos || !search.videos.length) {
                 return reply("❌ No results found!");
             }
+            // FIX: Pehli video select karne ke liye [0] lagana zaroori hai
             vid = search.videos[0];
             url = vid.url;
         }
@@ -42,7 +43,7 @@ cmd({
             `📺 *Channel:* ${vid.author?.name || 'Unknown'}\n` +
             `🕒 *Duration:* ${vid.timestamp}\n` +
             `👀 *Views:* ${vid.views?.toLocaleString() || 'N/A'}\n\n` +
-            `*Niche diye gaye number ka reply karein:* \n\n` +
+            `*Is message ka reply (quote) kar ke number likhein:* \n\n` +
             `1️⃣ *Audio File* (MP3 Format)\n` +
             `2️⃣ *Video File* (MP4 Format)\n\n` +
             `> Powered by LOVE-MD`;
@@ -55,8 +56,8 @@ cmd({
 
         // Message Listener to catch response
         conn.ev.on('messages.upsert', async (msgUpdate) => {
-            const msg = msgUpdate.messages[0];
-            if (!msg.message || !msg.message.extendedTextMessage) return;
+            const msg = msgUpdate.messages[0]; // FIX: Array se pehla message nikalna
+            if (!msg || !msg.message || !msg.message.extendedTextMessage) return;
             
             // Check if user is replying to the menu message
             const isReplyToMenu = msg.message.extendedTextMessage.contextInfo?.stanzaId === sentMsg.key.id;
@@ -70,7 +71,6 @@ cmd({
                 await reply("🎧 *Downloading Audio... Please wait.*");
                 let success = false;
                 
-                // Nayi working API arrays yahan add kar di hain
                 const audioAPIs = [
                     `${API_BASE}/yta6?url=${encodeURIComponent(url)}`,
                     `${API_BASE}/yta7?url=${encodeURIComponent(url)}`,
@@ -80,8 +80,6 @@ cmd({
                 for (const apiUrl of audioAPIs) {
                     try {
                         const response = await axios.get(apiUrl, { timeout: 15000 });
-                        
-                        // Aapke new JSON object ke mutabiq link extract ho raha hai
                         let audioUrl = response.data?.status && response.data?.download?.url ? response.data.download.url : null;
                         
                         if (audioUrl) {
