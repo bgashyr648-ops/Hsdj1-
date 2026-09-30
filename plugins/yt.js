@@ -1,260 +1,133 @@
 //---------------------------------------------------------------------------
-//           LOVE-MD - YOUTUBE DOWNLOADER
+//           TIGER-MD - YOUTUBE DOWNLOADER (UPDATED API)
+//---------------------------------------------------------------------------
+//  🚀 DOWNLOAD VIDEOS AND AUDIO USING JAWADTECH APIs
+//  📌 Video API: /ytv3   |   Audio API: /yta9
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
 const axios = require('axios');
+const API_BASE = "https://xjawadtech.vercel.app";
 
-// ============================================================
-// NEW API
-// ============================================================
-// Yahan apni NEW API ka endpoint lagayen.
-// Example:
-// const API_ENDPOINT = "https://example.com/api/youtube?url=";
-const API_ENDPOINT = "YOUR_NEW_API_ENDPOINT?url=";
-
-
-// ============================================================
-// SMALL CAPS
-// ============================================================
+// Small caps font helper
 const toSmallCaps = (text) => {
     const map = {
-        'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ',
-        'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ',
-        'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ',
-        'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ',
-        'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ',
-        'z': 'ᴢ'
+        'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ',
+        'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ', 'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ',
+        'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ', 'z': 'ᴢ'
     };
-
-    return text
-        .split('')
-        .map(c => map[c.toLowerCase()] || c)
-        .join('');
+    return text.split('').map(c => map[c.toLowerCase()] || c).join('');
 };
 
-
-// ============================================================
-// YOUTUBE VIDEO ID
-// ============================================================
+// Helper to extract YouTube video ID
 function getVideoId(url) {
-    const match = url.match(
-        /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
-    );
-
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
 }
 
-
-// ============================================================
-// NEW API REQUEST
-// Response expected:
-//
-// {
-//   "status": true,
-//   "creator": "JawadTechXD",
-//   "download": {
-//      "url": "https://..."
-//   }
-// }
-// ============================================================
-async function getDownloadUrl(url) {
-
-    const apiUrl = `${API_ENDPOINT}${encodeURIComponent(url)}`;
-
+// ============================================
+// HELPER: Download Audio (uses /yta9)
+// ============================================
+async function downloadAudio(url) {
     try {
-
-        const response = await axios.get(apiUrl, {
-            timeout: 30000
-        });
-
-        const data = response.data;
-
-        if (
-            data &&
-            data.status === true &&
-            data.download &&
-            data.download.url
-        ) {
-            return data.download.url;
+        const apiUrl = `${API_BASE}/yta9?url=${encodeURIComponent(url)}&key=baggayt`;
+        const response = await axios.get(apiUrl, { timeout: 20000 });
+        
+        if (response.data?.status && response.data?.download?.url) {
+            return response.data.download.url;
         }
-
         return null;
-
-    } catch (error) {
-
-        console.error(
-            'NEW API ERROR:',
-            error.message
-        );
-
+    } catch (e) {
+        console.error("❌ Audio API Error:", e.message);
         return null;
     }
 }
 
-
-// ============================================================
-// GET YOUTUBE VIDEO
-// ============================================================
-async function getYouTubeVideo(text) {
-
-    const yts = require('yt-search');
-
-    let vid;
-
-    if (
-        text.startsWith('http://') ||
-        text.startsWith('https://')
-    ) {
-
-        if (
-            !text.includes('youtube.com') &&
-            !text.includes('youtu.be')
-        ) {
-            throw new Error('Please provide a valid YouTube URL!');
+// ============================================
+// HELPER: Download Video (uses /ytv3)
+// ============================================
+async function downloadVideo(url) {
+    try {
+        const apiUrl = `${API_BASE}/ytv3?url=${encodeURIComponent(url)}&key=baggayt`;
+        const response = await axios.get(apiUrl, { timeout: 20000 });
+        
+        if (response.data?.status && response.data?.download?.url) {
+            return response.data.download.url;
         }
-
-        const videoId = getVideoId(text);
-
-        if (!videoId) {
-            throw new Error('Invalid YouTube URL!');
-        }
-
-        vid = await yts({
-            videoId: videoId
-        });
-
-    } else {
-
-        const search = await yts(text);
-
-        if (
-            !search.videos ||
-            !search.videos.length
-        ) {
-            throw new Error('No YouTube results found!');
-        }
-
-        vid = search.videos[0];
+        return null;
+    } catch (e) {
+        console.error("❌ Video API Error:", e.message);
+        return null;
     }
-
-    if (!vid) {
-        throw new Error('No results found!');
-    }
-
-    return vid;
 }
 
-
-// ============================================================
-// PLAY - AUDIO
-// ============================================================
+// ============================================
+// COMMAND: play (Audio Only)
+// ============================================
 cmd({
     pattern: "play",
-    alias: ["audio"],
+    alias: ["song", "music", "audio"],
     desc: "Download YouTube audio",
     category: "download",
     react: "🎧",
     filename: __filename
-}, async (
-    conn,
-    mek,
-    m,
-    { from, text, reply }
-) => {
-
+}, async (conn, mek, m, { from, text, reply }) => {
     try {
+        if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
-        if (!text) {
-            return reply(
-                "❌ Please provide song name\n\nExample: .play Shape of You"
-            );
+        const yts = require('yt-search');
+        let url = text;
+        let vid = null;
+
+        if (text.startsWith('http://') || text.startsWith('https://')) {
+            if (!text.includes("youtube.com") && !text.includes("youtu.be")) {
+                return reply("❌ Please provide a valid YouTube URL!");
+            }
+            const videoId = getVideoId(text);
+            if (!videoId) return reply("❌ Invalid YouTube URL!");
+            vid = await yts({ videoId: videoId });
+        } else {
+            const search = await yts(text);
+            if (!search.videos || !search.videos.length) {
+                return reply("❌ No song found!");
+            }
+            vid = search.videos[0];
+            url = vid.url;
         }
 
-        const vid = await getYouTubeVideo(text);
+        if (!vid) return reply("❌ No results found!");
 
-        await conn.sendMessage(
-            from,
-            {
-                image: {
-                    url: vid.thumbnail
-                },
-                caption:
-`- *AUDIO DOWNLOADER 🎧*
+        await conn.sendMessage(from, {
+            image: { url: vid.thumbnail },
+            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
+        }, { quoted: mek });
 
-╭━━❐━⪼
-┇๏ *Title* - ${vid.title}
-┇๏ *Duration* - ${vid.timestamp}
-┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}
-┇๏ *Author* - ${vid.author?.name || 'Unknown'}
-┇๏ *Status* - Downloading...
-╰━━❑━⪼
-
-> Powered by LOVE-MD`
-            },
-            { quoted: mek }
-        );
-
-        const audioUrl = await getDownloadUrl(
-            vid.url
-        );
+        const audioUrl = await downloadAudio(url);
 
         if (!audioUrl) {
-            return reply(
-                "❌ Audio download failed! Try again later."
-            );
+            await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+            return reply("❌ Download failed! Try again later.");
         }
 
-        await conn.sendMessage(
-            from,
-            {
-                audio: {
-                    url: audioUrl
-                },
-                mimetype: "audio/mpeg",
-                fileName: `${vid.title}.mp3`,
-                ptt: false
-            },
-            { quoted: mek }
-        );
+        await conn.sendMessage(from, {
+            audio: { url: audioUrl },
+            mimetype: "audio/mpeg",
+            fileName: `${vid.title}.mp3`,
+            ptt: false
+        }, { quoted: mek });
 
-        await conn.sendMessage(
-            from,
-            {
-                react: {
-                    text: "✅",
-                    key: m.key
-                }
-            }
-        );
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
-    } catch (error) {
-
-        console.error(
-            "PLAY ERROR:",
-            error
-        );
-
-        reply(
-            `❌ ${error.message || "Download error!"}`
-        );
-
-        await conn.sendMessage(
-            from,
-            {
-                react: {
-                    text: "❌",
-                    key: m.key
-                }
-            }
-        );
+    } catch (err) {
+        console.error("❌ PLAY ERROR:", err);
+        reply("❌ Error occurred! Please try again later.");
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
 
-
-// ============================================================
-// VIDEO
-// ============================================================
+// ============================================
+// COMMAND: video (Video Download)
+// ============================================
 cmd({
     pattern: "video",
     alias: ["ytv", "ytmp4", "vd"],
@@ -262,394 +135,283 @@ cmd({
     category: "download",
     react: "📹",
     filename: __filename
-}, async (
-    conn,
-    mek,
-    m,
-    { from, text, reply }
-) => {
-
+}, async (conn, mek, m, { from, text, reply }) => {
     try {
+        if (!text) return reply("🎥 Please provide a video name or link!\n\nExample: `.video Alone Marshmello`");
 
-        if (!text) {
-            return reply(
-                "🎥 Please provide a video name or YouTube link!\n\nExample: .video Alone Marshmello"
-            );
+        const yts = require('yt-search');
+        let url = text;
+        let vid = null;
+
+        if (text.startsWith('http://') || text.startsWith('https://')) {
+            if (!text.includes("youtube.com") && !text.includes("youtu.be")) {
+                return reply("❌ Please provide a valid YouTube URL!");
+            }
+            const videoId = getVideoId(text);
+            if (!videoId) return reply("❌ Invalid YouTube URL!");
+            vid = await yts({ videoId: videoId });
+        } else {
+            const search = await yts(text);
+            if (!search.videos || !search.videos.length) {
+                return reply("❌ No video results found!");
+            }
+            vid = search.videos[0];
+            url = vid.url;
         }
 
-        const vid = await getYouTubeVideo(text);
+        if (!vid) return reply("❌ No results found!");
 
-        await conn.sendMessage(
-            from,
-            {
-                image: {
-                    url: vid.thumbnail
-                },
-                caption:
-`*🎬 VIDEO DOWNLOADER*
+        await conn.sendMessage(from, {
+            image: { url: vid.thumbnail },
+            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
+        }, { quoted: mek });
 
-🎞️ *Title:* ${vid.title}
-📺 *Channel:* ${vid.author?.name || 'Unknown'}
-🕒 *Duration:* ${vid.timestamp}
-
-*Status:* Downloading Video...
-
-> Powered by LOVE-MD`
-            },
-            { quoted: mek }
-        );
-
-        const videoUrl = await getDownloadUrl(
-            vid.url
-        );
+        const videoUrl = await downloadVideo(url);
 
         if (!videoUrl) {
-            return reply(
-                "❌ Video download failed! Try again later."
-            );
+            await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+            return reply("❌ Download failed! Try again later.");
         }
 
-        await conn.sendMessage(
-            from,
-            {
-                video: {
-                    url: videoUrl
-                },
-                caption:
-`🎬 *${vid.title}*
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            caption: `🎬 *${vid.title}*\n\n> Powered by TIGER-MD`
+        }, { quoted: mek });
 
-> Powered by LOVE-MD`
-            },
-            { quoted: mek }
-        );
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
 
-        await conn.sendMessage(
-            from,
-            {
-                react: {
-                    text: "✅",
-                    key: m.key
-                }
-            }
-        );
-
-    } catch (error) {
-
-        console.error(
-            "VIDEO ERROR:",
-            error
-        );
-
-        reply(
-            `❌ ${error.message || "Download error!"}`
-        );
-
-        await conn.sendMessage(
-            from,
-            {
-                react: {
-                    text: "❌",
-                    key: m.key
-                }
-            }
-        );
+    } catch (e) {
+        console.error("Error in .video command:", e);
+        reply("❌ Error occurred, please try again later!");
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
 
+// ============================================
+// COMMAND: drama (Same style as video)
+// ============================================
+cmd({
+    pattern: "drama",
+    alias: ["kdrama", "shortdrama"],
+    desc: "Download drama/short video from YouTube",
+    category: "download",
+    react: "🎭",
+    filename: __filename
+}, async (conn, mek, m, { from, text, reply }) => {
+    try {
+        if (!text) return reply("🎭 Please provide a drama name or link!\n\nExample: `.drama My Drama`");
 
-// ============================================================
-// SONG - AUDIO / VIDEO
-// ============================================================
+        const yts = require('yt-search');
+        let url = text;
+        let vid = null;
+
+        if (text.startsWith('http://') || text.startsWith('https://')) {
+            if (!text.includes("youtube.com") && !text.includes("youtu.be")) {
+                return reply("❌ Please provide a valid YouTube URL!");
+            }
+            const videoId = getVideoId(text);
+            if (!videoId) return reply("❌ Invalid YouTube URL!");
+            vid = await yts({ videoId: videoId });
+        } else {
+            const search = await yts(text);
+            if (!search.videos || !search.videos.length) {
+                return reply("❌ No drama results found!");
+            }
+            vid = search.videos[0];
+            url = vid.url;
+        }
+
+        if (!vid) return reply("❌ No results found!");
+
+        await conn.sendMessage(from, {
+            image: { url: vid.thumbnail },
+            caption: `*🎭 DRAMA DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading...\n\n> Powered by TIGER-MD`
+        }, { quoted: mek });
+
+        const videoUrl = await downloadVideo(url);
+
+        if (!videoUrl) {
+            await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+            return reply("❌ Download failed! Try again later.");
+        }
+
+        await conn.sendMessage(from, {
+            video: { url: videoUrl },
+            caption: `🎭 *${vid.title}*\n\n> Powered by TAGER-MD`
+        }, { quoted: mek });
+
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+
+    } catch (e) {
+        console.error("Error in .drama command:", e);
+        reply("❌ Error occurred, please try again later!");
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
+    }
+});
+
+// ============================================
+// COMMAND: song (Interactive - Choose Audio/Video)
+// ============================================
 cmd({
     pattern: "song",
-    alias: ["yt", "ytdl"],
-    desc: "Download YouTube audio or video",
+    alias: ["yt", "music", "ytdl"],
+    desc: "Download YouTube song or video (interactive)",
     category: "download",
     react: "🎧",
     filename: __filename
-}, async (
-    conn,
-    mek,
-    m,
-    { from, text, reply }
-) => {
-
+}, async (conn, mek, m, { from, text, reply }) => {
     try {
+        if (!text) return reply("🎶 Please provide a YouTube video name or link.\n\nExample: `.song Alone - Alan Walker`");
 
-        if (!text) {
-            return reply(
-                "🎶 Please provide a YouTube video name or link.\n\nExample: .song Alone Alan Walker"
-            );
+        const yts = require('yt-search');
+        let vid = null;
+
+        if (text.startsWith('http://') || text.startsWith('https://')) {
+            if (!text.includes("youtube.com") && !text.includes("youtu.be")) {
+                return reply("❌ Please provide a valid YouTube URL!");
+            }
+            const videoId = getVideoId(text);
+            if (!videoId) return reply("❌ Invalid YouTube URL!");
+            vid = await yts({ videoId: videoId });
+        } else {
+            const search = await yts(text);
+            if (!search.videos || !search.videos.length) {
+                return reply("❌ No results found!");
+            }
+            vid = search.videos[0];
         }
 
-        const vid = await getYouTubeVideo(text);
+        if (!vid) return reply("❌ No results found!");
 
-        const caption =
-`*╭┈───〔 ${toSmallCaps('YT Downloader')} 〕┈───⊷*
-
+        const caption = `*╭┈───〔 ${toSmallCaps('YT Downloader')} 〕┈───⊷*
 *├▢ 🎬 Title:* ${vid.title}
 *├▢ 📺 Channel:* ${vid.author?.name || 'Unknown'}
 *├▢ ⏰ Duration:* ${vid.timestamp}
 *├▢ 👀 Views:* ${vid.views?.toLocaleString() || 'N/A'}
-
+*╰───────────────────⊷*
 *╭───⬡ ${toSmallCaps('Select Format')} ⬡───*
 *┋ ⬡ 1* 🎧 ${toSmallCaps('Audio (MP3)')}
 *┋ ⬡ 2* 📹 ${toSmallCaps('Video (MP4)')}
 *╰───────────────────⊷*
 
-> Powered by LOVE-MD`;
+> Powered by TIGER-MD`;
 
-        const sent = await conn.sendMessage(
-            from,
-            {
-                image: {
-                    url: vid.thumbnail
-                },
-                caption: caption
-            },
-            { quoted: mek }
-        );
+        const sent = await conn.sendMessage(from, {
+            image: { url: vid.thumbnail },
+            caption
+        }, { quoted: mek });
 
         const msgId = sent.key.id;
 
         const songListener = async (msgData) => {
+            const received = msgData.messages[0];
+            if (!received.message) return;
 
-            try {
+            const selected = received.message.conversation || received.message.extendedTextMessage?.text;
+            const replyToBot = received.message.extendedTextMessage?.contextInfo?.stanzaId === msgId;
 
-                const received =
-                    msgData.messages[0];
+            if (replyToBot) {
+                conn.ev.off("messages.upsert", songListener);
+                await conn.sendMessage(from, { react: { text: '⬇️', key: received.key } });
 
-                if (!received?.message) return;
+                if (selected === "1" || selected === "2") {
+                    const type = selected === "1" ? "mp3" : "mp4";
 
-                const selected =
-                    received.message.conversation ||
-                    received.message.extendedTextMessage?.text;
-
-                const replyToBot =
-                    received.message.extendedTextMessage
-                        ?.contextInfo
-                        ?.stanzaId === msgId;
-
-                if (!replyToBot) return;
-
-                conn.ev.off(
-                    "messages.upsert",
-                    songListener
-                );
-
-                if (
-                    selected !== "1" &&
-                    selected !== "2"
-                ) {
-
-                    return conn.sendMessage(
-                        from,
-                        {
-                            text:
-`❌ *Invalid selection!*
-
-Reply with:
-1️⃣ Audio (MP3)
-2️⃣ Video (MP4)`
-                        },
-                        { quoted: received }
-                    );
-                }
-
-                await conn.sendMessage(
-                    from,
-                    {
-                        react: {
-                            text: "⬇️",
-                            key: received.key
+                    if (type === "mp3") {
+                        const audioUrl = await downloadAudio(vid.url);
+                        if (!audioUrl) {
+                            return await conn.sendMessage(from, {
+                                text: "❌ Audio download failed! Try again later."
+                            }, { quoted: received });
                         }
-                    }
-                );
-
-                const downloadUrl =
-                    await getDownloadUrl(
-                        vid.url
-                    );
-
-                if (!downloadUrl) {
-
-                    return conn.sendMessage(
-                        from,
-                        {
-                            text:
-                                "❌ Download failed! Try again later."
-                        },
-                        { quoted: received }
-                    );
-                }
-
-                if (selected === "1") {
-
-                    await conn.sendMessage(
-                        from,
-                        {
-                            audio: {
-                                url: downloadUrl
-                            },
+                        await conn.sendMessage(from, {
+                            audio: { url: audioUrl },
                             mimetype: "audio/mpeg",
-                            fileName:
-                                `${vid.title}.mp3`,
+                            fileName: `${vid.title}.mp3`,
                             ptt: false
-                        },
-                        { quoted: received }
-                    );
-
-                } else {
-
-                    await conn.sendMessage(
-                        from,
-                        {
-                            video: {
-                                url: downloadUrl
-                            },
-                            caption:
-`🎬 *${vid.title}*
-
-> Powered by LOVE-MD`
-                        },
-                        { quoted: received }
-                    );
-                }
-
-                await conn.sendMessage(
-                    from,
-                    {
-                        react: {
-                            text: "✅",
-                            key: received.key
+                        }, { quoted: received });
+                    } else {
+                        const videoUrl = await downloadVideo(vid.url);
+                        if (!videoUrl) {
+                            return await conn.sendMessage(from, {
+                                text: "❌ Video download failed! Try again later."
+                            }, { quoted: received });
                         }
+                        await conn.sendMessage(from, {
+                            video: { url: videoUrl },
+                            caption: `🎬 *${vid.title}*\n\n> Powered by TIGER-MD`
+                        }, { quoted: received });
                     }
-                );
 
-            } catch (error) {
-
-                console.error(
-                    "SONG LISTENER ERROR:",
-                    error
-                );
-
+                    await conn.sendMessage(from, { react: { text: '✅', key: received.key } });
+                } else {
+                    await conn.sendMessage(from, {
+                        text: `❌ *Invalid selection!*\nPlease reply with:\n1️⃣ for Audio (MP3)\n2️⃣ for Video (MP4)`
+                    }, { quoted: received });
+                }
             }
         };
 
-        conn.ev.on(
-            "messages.upsert",
-            songListener
-        );
+        conn.ev.on("messages.upsert", songListener);
 
         setTimeout(() => {
+            conn.ev.off("messages.upsert", songListener);
+        }, 20000);
 
-            conn.ev.off(
-                "messages.upsert",
-                songListener
-            );
-
-        }, 30000);
-
-    } catch (error) {
-
-        console.error(
-            "SONG ERROR:",
-            error
-        );
-
-        reply(
-            `❌ ${error.message || "Error occurred!"}`
-        );
+    } catch (e) {
+        console.error(e);
+        reply(`❌ Error: ${e.message}`);
+        await conn.sendMessage(from, { react: { text: '❌', key: m.key } });
     }
 });
 
-
-// ============================================================
-// YTS - YOUTUBE SEARCH
-// ============================================================
+// ============================================
+// COMMAND: yts (Search)
+// ============================================
 cmd({
     pattern: "yts",
     alias: ["ytsearch", "searchyt"],
-    use: ".yts jawad",
+    use: '.yts jawad',
     react: "🔎",
-    desc: "Search YouTube",
+    desc: "Search YouTube and get video details",
     category: "search",
     filename: __filename
-}, async (
-    conn,
-    mek,
-    m,
-    { from, text, reply }
-) => {
-
+},
+async (conn, mek, m, { from, text, reply }) => {
     try {
+        if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
-        if (!text) {
-            return reply(
-                "*Please provide search words!*\n\nExample: .yts Alan Walker Faded"
-            );
-        }
-
-        const yts = require("yt-search");
-
+        const yts = require('yt-search');
         const search = await yts(text);
 
-        if (
-            !search.videos ||
-            !search.videos.length
-        ) {
-            return reply(
-                "*No results found!*"
-            );
+        if (!search.videos || !search.videos.length) {
+            return reply('*No results found!*');
         }
 
-        const results =
-            search.videos.slice(0, 10);
+        const results = search.videos.slice(0, 10);
 
-        let mesaj =
-`*╭┈───〔 ${toSmallCaps('YouTube Search')} 〕┈───⊷*
-
-*├▢ 🔎 Query:* ${text}
-*├▢ 📊 Results:* ${search.videos.length}
-*╰───────────────────⊷*
-
-`;
+        let mesaj = `*╭┈───〔 ${toSmallCaps('YouTube Search')} 〕┈───⊷*\n`;
+        mesaj += `*├▢ 🔎 Query:* ${text}\n`;
+        mesaj += `*├▢ 📊 Results:* ${search.videos.length}\n`;
+        mesaj += `*╰───────────────────⊷*\n\n`;
 
         results.forEach((video, i) => {
-
-            mesaj +=
-`*${i + 1}. ${video.title}*
-*├▢ 🔗 URL:* ${video.url}
-*├▢ ⏱️ Duration:* ${video.timestamp}
-*├▢ 👀 Views:* ${video.views?.toLocaleString() || 'N/A'}
-*├▢ 👤 Channel:* ${video.author?.name || 'Unknown'}
-*╰───────────────────⊷*
-
-`;
+            mesaj += `*${i + 1}. ${video.title}*\n`;
+            mesaj += `*├▢ 🔗 URL:* ${video.url}\n`;
+            mesaj += `*├▢ ⏱️ Duration:* ${video.timestamp}\n`;
+            mesaj += `*├▢ 👀 Views:* ${video.views?.toLocaleString() || 'N/A'}\n`;
+            mesaj += `*├▢ 👤 Channel:* ${video.author?.name || 'Unknown'}\n`;
+            mesaj += `*╰───────────────────⊷*\n\n`;
         });
 
-        mesaj +=
-`*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*
-*┋ ⬡ ${toSmallCaps('LOVE-MD')}*
-*╰───────────────────⊷*`;
+        mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
+        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD)}*\n`;
+        mesaj += `*╰───────────────────⊷*`;
 
-        await conn.sendMessage(
-            from,
-            {
-                text: mesaj.trim()
-            },
-            { quoted: mek }
-        );
+        await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
 
-    } catch (error) {
-
-        console.error(
-            "YTS ERROR:",
-            error
-        );
-
-        reply(
-            `*Error occurred while searching!*\n\`\`\`${error.message}\`\`\``
-        );
+    } catch (e) {
+        console.error('Error in yts command:', e);
+        reply(`*Error occurred while searching!*\n\`\`\`${e.message}\`\`\``);
     }
 });
