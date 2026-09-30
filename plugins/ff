@@ -10,20 +10,18 @@ cmd({
 },
 async (conn, mek, m, { from, q, reply }) => {
     try {
+        console.log("📥 FB command triggered with query:", q);
+        
         if (!q) {
-            return reply("Please provide a valid Facebook video link!");
-        }
-        if (!q.includes('facebook.com') && !q.includes('fb.watch')) {
-            return reply("Invalid Facebook URL detected!");
+            return reply("Please provide a Facebook link! Example: .fb [link]");
         }
 
-        console.log("📥 Facebook downloader command successfully triggered!");
-        await reply("Downloading your Facebook video, please wait...");
+        await reply("Processing your Facebook request...");
 
         let res = await fetchJson(`https://api.siputzx.my.id/api/d/facebook?url=${encodeURIComponent(q)}`);
         
         if (!res || !res.status || !res.data) {
-            return reply("Failed to fetch video. Please check the link or try another one!");
+            return reply("Failed to fetch video from API!");
         }
 
         let videoUrl = res.data.hd || res.data.sd;
@@ -39,7 +37,6 @@ async (conn, mek, m, { from, q, reply }) => {
 
     } catch (error) {
         console.error('FB ERROR:', error);
-        return reply(`An error occurred: ${error.message}`);
+        return reply(`Error: ${error.message}`);
     }
 });
-
