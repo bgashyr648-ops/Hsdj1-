@@ -1,1 +1,45 @@
+const { cmd } = require('../command');
+
+cmd({
+    pattern: "fb",
+    alias: ["facebook", "fbdl"],
+    desc: "Download Facebook videos",
+    category: "download",
+    react: "📥",
+    filename: __filename
+},
+async (conn, mek, m, { from, q, reply }) => {
+    try {
+        if (!q) {
+            return reply("Please provide a valid Facebook video link!");
+        }
+        if (!q.includes('facebook.com') && !q.includes('fb.watch')) {
+            return reply("Invalid Facebook URL detected!");
+        }
+
+        console.log("📥 Facebook downloader command successfully triggered!");
+        await reply("Downloading your Facebook video, please wait...");
+
+        let res = await fetchJson(`https://api.siputzx.my.id/api/d/facebook?url=${encodeURIComponent(q)}`);
+        
+        if (!res || !res.status || !res.data) {
+            return reply("Failed to fetch video. Please check the link or try another one!");
+        }
+
+        let videoUrl = res.data.hd || res.data.sd;
+
+        await conn.sendMessage(
+            from,
+            {
+                video: { url: videoUrl },
+                caption: `🎬 *FACEBOOK DOWNLOADER*\n\n> *© Powered by BAGGA-SHER-MD*`
+            },
+            { quoted: mek }
+        );
+
+    } catch (error) {
+        console.error('FB ERROR:', error);
+        return reply(`An error occurred: ${error.message}`);
+    }
+});
 
