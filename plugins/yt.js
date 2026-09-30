@@ -7,6 +7,7 @@
 
 const { cmd } = require('../command');
 const axios = require('axios');
+const yts = require('yt-search');
 const API_BASE = "https://xjawadtech.vercel.app";
 
 // Small caps font helper
@@ -31,7 +32,7 @@ function getVideoId(url) {
 async function downloadAudio(url) {
     try {
         const apiUrl = `${API_BASE}/yta9?url=${encodeURIComponent(url)}&key=baggayt`;
-        const response = await axios.get(apiUrl, { timeout: 20000 });
+        const response = await axios.get(apiUrl, { timeout: 25000 });
         
         if (response.data?.status && response.data?.download?.url) {
             return response.data.download.url;
@@ -49,7 +50,7 @@ async function downloadAudio(url) {
 async function downloadVideo(url) {
     try {
         const apiUrl = `${API_BASE}/ytv3?url=${encodeURIComponent(url)}&key=baggayt`;
-        const response = await axios.get(apiUrl, { timeout: 20000 });
+        const response = await axios.get(apiUrl, { timeout: 25000 });
         
         if (response.data?.status && response.data?.download?.url) {
             return response.data.download.url;
@@ -66,7 +67,7 @@ async function downloadVideo(url) {
 // ============================================
 cmd({
     pattern: "play",
-    alias: ["song", "music", "audio"],
+    alias: ["song", "audio"],
     desc: "Download YouTube audio",
     category: "download",
     react: "🎧",
@@ -75,7 +76,6 @@ cmd({
     try {
         if (!text) return reply("❌ Please provide song name\nExample: .play Shape of You");
 
-        const yts = require('yt-search');
         let url = text;
         let vid = null;
 
@@ -99,7 +99,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
+            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() \vert{}\vert{} 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         const audioUrl = await downloadAudio(url);
@@ -139,7 +139,6 @@ cmd({
     try {
         if (!text) return reply("🎥 Please provide a video name or link!\n\nExample: `.video Alone Marshmello`");
 
-        const yts = require('yt-search');
         let url = text;
         let vid = null;
 
@@ -163,7 +162,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
+            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name \vert{}\vert{} 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         const videoUrl = await downloadVideo(url);
@@ -201,7 +200,6 @@ cmd({
     try {
         if (!text) return reply("🎭 Please provide a drama name or link!\n\nExample: `.drama My Drama`");
 
-        const yts = require('yt-search');
         let url = text;
         let vid = null;
 
@@ -225,7 +223,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `*🎭 DRAMA DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading...\n\n> Powered by TIGER-MD`
+            caption: `*🎭 DRAMA DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name \vert{}\vert{} 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading...\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         const videoUrl = await downloadVideo(url);
@@ -237,7 +235,7 @@ cmd({
 
         await conn.sendMessage(from, {
             video: { url: videoUrl },
-            caption: `🎭 *${vid.title}*\n\n> Powered by TAGER-MD`
+            caption: `🎭 *${vid.title}*\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
@@ -254,16 +252,15 @@ cmd({
 // ============================================
 cmd({
     pattern: "song",
-    alias: ["yt", "music", "ytdl"],
+    alias: ["yt", "musiclist", "ytdl"],
     desc: "Download YouTube song or video (interactive)",
     category: "download",
-    react: "🎧",
+    react: "🎶",
     filename: __filename
 }, async (conn, mek, m, { from, text, reply }) => {
     try {
         if (!text) return reply("🎶 Please provide a YouTube video name or link.\n\nExample: `.song Alone - Alan Walker`");
 
-        const yts = require('yt-search');
         let vid = null;
 
         if (text.startsWith('http://') || text.startsWith('https://')) {
@@ -381,7 +378,6 @@ async (conn, mek, m, { from, text, reply }) => {
     try {
         if (!text) return reply('*Please provide search words!*\n\nExample: .yts Alan Walker Faded');
 
-        const yts = require('yt-search');
         const search = await yts(text);
 
         if (!search.videos || !search.videos.length) {
@@ -396,7 +392,7 @@ async (conn, mek, m, { from, text, reply }) => {
         mesaj += `*╰───────────────────⊷*\n\n`;
 
         results.forEach((video, i) => {
-            mesaj += `*${i + 1}. ${video.title}*\n`;
+            mesaj += `*${i + 1}.${video.title}*\n`;
             mesaj += `*├▢ 🔗 URL:* ${video.url}\n`;
             mesaj += `*├▢ ⏱️ Duration:* ${video.timestamp}\n`;
             mesaj += `*├▢ 👀 Views:* ${video.views?.toLocaleString() || 'N/A'}\n`;
@@ -405,7 +401,7 @@ async (conn, mek, m, { from, text, reply }) => {
         });
 
         mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
-        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD)}*\n`;
+        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
         mesaj += `*╰───────────────────⊷*`;
 
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
