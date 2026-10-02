@@ -1,7 +1,7 @@
-Const { cmd } = require('../command');
+const { cmd } = require('../command');
 
 cmd({
-    pattern: "school",
+    pattern: "baga",
     alias: ["bagasher", "mdvideo", "sadvideo"],
     desc: "BAGGA SHER MD sad videos command",
     category: "owner",
@@ -14,7 +14,7 @@ async (conn, mek, m, { from, q, reply }) => {
         await reply("💔 BAGGA SHER MD sad video bhej raha hai...");
 
         const autoVideoLinks = [
-            "https://files.catbox.moe/h3hg03.mp4"
+            "https://files.catbox.moe/h3hg03.mp4",
         ];
 
         const videoUrl = autoVideoLinks[Math.floor(Math.random() * autoVideoLinks.length)];
@@ -23,7 +23,7 @@ async (conn, mek, m, { from, q, reply }) => {
             from,
             {
                 video: { url: videoUrl },
-                caption: `💔 *BAGGA SHER MD SAD VIBES*\n🥺 *POWERED BY International Grammar School, Sahiwal 82/6R*`
+                caption: `💔 *BAGGA SHER MD SAD VIBES*\n🥺 *POWERED BY TIGER MD*`
             },
             { quoted: mek }
         );
