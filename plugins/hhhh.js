@@ -16,33 +16,27 @@ cmd({
 
         const encodedQuery = encodeURIComponent(text);
         
-        // 5-7 Public AI APIs ki list (Fallback system)
         const apis = [
-            `https://bk9.fun/ai/gemini?q=${encodedQuery}`,
-            `https://api.giftedtech.my.id/api/ai/geminiai?apikey=gifted&q=${encodedQuery}`,
             `https://api.siputzx.my.id/api/ai/gemini?query=${encodedQuery}`,
+            `https://api.vapis.my.id/api/gemini?q=${encodedQuery}`,
             `https://itzpire.com/ai/gemini?q=${encodedQuery}`,
-            `https://api.vapis.my.id/api/gemini?q=${encodedQuery}`
+            `https://bk9.fun/ai/gemini?q=${encodedQuery}`
         ];
 
         let aiReply = null;
 
-        // Ek ke baad ek sab APIs ko try karega jab tak koi ek response na de de
         for (let apiUrl of apis) {
             try {
                 const response = await axios.get(apiUrl, { timeout: 15000 });
                 if (response && response.data) {
-                    // Alag-alag API ke response formats ko handle karne ke liye
-                    aiReply = response.data.BK9 || 
+                    aiReply = response.data.data || 
                               response.data.result || 
-                              response.data.data || 
-                              response.data.message || 
-                              (response.data.success && response.data.data);
+                              response.data.BK9 || 
+                              response.data.message;
                     
-                    if (aiReply) break; // Agar jawab mil gaya toh loop rok do
+                    if (aiReply) break;
                 }
             } catch (err) {
-                // Agar ek API fail ho jaye toh chup-chaap agli wali try karega
                 continue;
             }
         }
