@@ -1,7 +1,7 @@
 const { cmd } = require('../command');
 
 cmd({
-    pattern: "baga",
+    pattern: "school",
     alias: ["bagasher", "mdvideo", "sadvideo"],
     desc: "BAGGA SHER MD sad videos command",
     category: "owner",
