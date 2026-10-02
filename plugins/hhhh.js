@@ -14,7 +14,7 @@ async (conn, mek, m, { from, q, reply }) => {
         await reply("🇵🇰 BAGGA SHER MD sad video bhej raha hai...");
 
         const autoVideoLinks = [
-            "https://files.catbox.moe/h3hg03.mp4"
+            "https://d.uguu.se/vnSibtFL.mp4"
         ];
 
         const videoUrl = autoVideoLinks[Math.floor(Math.random() * autoVideoLinks.length)];
