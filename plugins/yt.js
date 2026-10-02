@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------------
-//           TIGER-MD - YOUTUBE DOWNLOADER (DEBUGGED & FIXED)
+//           TIGER-MD - YOUTUBE DOWNLOADER (UPDATED WITH YOUR API)
 //---------------------------------------------------------------------------
 
 const { cmd } = require('../command');
 const axios = require('axios');
 const yts = require('yt-search');
-const API_BASE = "https://xjawadtech.vercel.app";
+const API_BASE = "https://server-alpha-pearl.vercel.app";
 
 // Helper to extract YouTube video ID
 function getVideoId(url) {
@@ -19,12 +19,12 @@ function getVideoId(url) {
 async function downloadAudio(url) {
     try {
         console.log("🔍 Calling Audio API for URL:", url);
-        const apiUrl = `${API_BASE}/yta9?url=${encodeURIComponent(url)}&key=baggayt`;
+        const apiUrl = `${API_BASE}/?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 30000 });
         console.log("📥 Audio API Response Status:", response.status);
         
-        if (response.data && response.data.status && response.data.download && response.data.download.url) {
-            return response.data.download.url;
+        if (response.data && response.data.success && response.data.downloadUrl) {
+            return response.data.downloadUrl;
         }
         console.log("⚠️ Audio API returned invalid data structure:", response.data);
         return null;
@@ -40,12 +40,12 @@ async function downloadAudio(url) {
 async function downloadVideo(url) {
     try {
         console.log("🔍 Calling Video API for URL:", url);
-        const apiUrl = `${API_BASE}/ytv3?url=${encodeURIComponent(url)}&key=baggayt`;
+        const apiUrl = `${API_BASE}/?url=${encodeURIComponent(url)}`;
         const response = await axios.get(apiUrl, { timeout: 30000 });
         console.log("📥 Video API Response Status:", response.status);
         
-        if (response.data && response.data.status && response.data.download && response.data.download.url) {
-            return response.data.download.url;
+        if (response.data && response.data.success && response.data.downloadUrl) {
+            return response.data.downloadUrl;
         }
         console.log("⚠️ Video API returned invalid data structure:", response.data);
         return null;
