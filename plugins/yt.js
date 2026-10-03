@@ -14,24 +14,28 @@ function getVideoId(url) {
 }
 
 // ============================================
-// HELPER: Download Audio
+// HELPER: Download Audio (Auto Fallback for yta1 to yta9)
 // ============================================
 async function downloadAudio(url) {
-    try {
-        console.log("🔍 Calling Audio API for URL:", url);
-        const apiUrl = `${API_BASE}/yta9?url=${encodeURIComponent(url)}&key=baggayt`;
-        const response = await axios.get(apiUrl, { timeout: 30000 });
-        console.log("📥 Audio API Response Status:", response.status);
-        
-        if (response.data && response.data.status && response.data.download && response.data.download.url) {
-            return response.data.download.url;
+    const endpoints = ['yta1', 'yta2', 'yta3', 'yta4', 'yta5', 'yta6', 'yta8', 'yta9'];
+    
+    for (const ep of endpoints) {
+        try {
+            console.log(`🔍 Trying Audio API [${ep}] for URL:`, url);
+            const apiUrl = `${API_BASE}/${ep}?url=${encodeURIComponent(url)}&key=baggayt`;
+            const response = await axios.get(apiUrl, { timeout: 20000 });
+            
+            if (response.data && response.data.status && response.data.download && response.data.download.url) {
+                console.log(`✅ Success with Audio API [${ep}]`);
+                return response.data.download.url;
+            }
+        } catch (e) {
+            console.log(`⚠️ Audio API [${ep}] failed:`, e.message);
         }
-        console.log("⚠️ Audio API returned invalid data structure:", response.data);
-        return null;
-    } catch (e) {
-        console.error("❌ Audio API Exception:", e.message);
-        return null;
     }
+    
+    console.error("❌ All Audio APIs failed!");
+    return null;
 }
 
 // ============================================
