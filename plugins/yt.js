@@ -14,10 +14,10 @@ function getVideoId(url) {
 }
 
 // ============================================
-// HELPER: Download Audio (Auto Fallback for yta1 to yta9)
+// HELPER: Download Audio (Using your exact APIs)
 // ============================================
 async function downloadAudio(url) {
-    const endpoints = ['yta1', 'yta2', 'yta3', 'yta4', 'yta5', 'yta6', 'yta8', 'yta9'];
+    const endpoints = ['yta8', 'yta6', 'yta5', 'yta4', 'yta3', 'yta2', 'yta1', 'yta9'];
     
     for (const ep of endpoints) {
         try {
@@ -42,21 +42,25 @@ async function downloadAudio(url) {
 // HELPER: Download Video
 // ============================================
 async function downloadVideo(url) {
-    try {
-        console.log("🔍 Calling Video API for URL:", url);
-        const apiUrl = `${API_BASE}/ytv3?url=${encodeURIComponent(url)}&key=baggayt`;
-        const response = await axios.get(apiUrl, { timeout: 30000 });
-        console.log("📥 Video API Response Status:", response.status);
-        
-        if (response.data && response.data.status && response.data.download && response.data.download.url) {
-            return response.data.download.url;
+    const endpoints = ['ytv3', 'ytv2', 'ytv1'];
+    
+    for (const ep of endpoints) {
+        try {
+            console.log(`🔍 Trying Video API [${ep}] for URL:`, url);
+            const apiUrl = `${API_BASE}/${ep}?url=${encodeURIComponent(url)}&key=baggayt`;
+            const response = await axios.get(apiUrl, { timeout: 30000 });
+            
+            if (response.data && response.data.status && response.data.download && response.data.download.url) {
+                console.log(`✅ Success with Video API [${ep}]`);
+                return response.data.download.url;
+            }
+        } catch (e) {
+            console.log(`⚠️ Video API [${ep}] failed:`, e.message);
         }
-        console.log("⚠️ Video API returned invalid data structure:", response.data);
-        return null;
-    } catch (e) {
-        console.error("❌ Video API Exception:", e.message);
-        return null;
     }
+    
+    console.error("❌ All Video APIs failed!");
+    return null;
 }
 
 // ============================================
