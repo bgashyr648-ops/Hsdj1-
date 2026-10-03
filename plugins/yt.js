@@ -14,7 +14,7 @@ function getVideoId(url) {
 }
 
 // ============================================
-// HELPER: Download Audio (Using your exact APIs)
+// HELPER: Download Audio (Auto Fallback for your APIs)
 // ============================================
 async function downloadAudio(url) {
     const endpoints = ['yta8', 'yta6', 'yta5', 'yta4', 'yta3', 'yta2', 'yta1', 'yta9'];
