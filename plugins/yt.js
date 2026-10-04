@@ -62,7 +62,7 @@ async function saveAndSendAsDocument(conn, from, quotedMsg, downloadURL, title) 
             document: { url: downloadURL },
             mimetype: "video/mp4",
             fileName: `${title}.mp4`,
-            caption: `📄 *${title}*\n\n> Powered by KHAN-MD`
+            caption: `📄 *${title}*\n\n> Powered by TIGER-MD`
         }, { quoted: quotedMsg });
 
         if (global.gc) global.gc();
@@ -95,12 +95,12 @@ async function handleVideoResponse(conn, from, quotedMsg, response, ytSearchTitl
                 document: { url: videoUrl },
                 mimetype: "video/mp4",
                 fileName: `${title}.mp4`,
-                caption: `📄 *${title}*\n📹 Video Document\n\n> Powered by KHAN-MD`
+                caption: `📄 *${title}*\n📹 Video Document\n\n> Powered by TIGER-MD`
             }, { quoted: quotedMsg });
         } else {
             await conn.sendMessage(from, {
                 video: { url: videoUrl },
-                caption: `🎬 *${title}*\n\n> Powered by KHAN-MD`
+                caption: `🎬 *${title}*\n\n> Powered by TIGER-MD`
             }, { quoted: quotedMsg });
         }
         return true;
@@ -146,7 +146,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by KHAN-MD`
+            caption: `- *AUDIO DOWNLOADER 🎧*\n╭━━❐━⪼\n┇๏ *Title* - ${vid.title}\n┇๏ *Duration* - ${vid.timestamp}\n┇๏ *Views* - ${vid.views?.toLocaleString() || 'N/A'}\n┇๏ *Author* - ${vid.author?.name || 'Unknown'}\n┇๏ *Status* - Downloading...\n╰━━❑━⪼\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         let success = false;
@@ -222,7 +222,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by KHAN-MD`
+            caption: `*🎬 VIDEO DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Video...\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         let success = false;
@@ -295,7 +295,7 @@ cmd({
 *┋ ⬡ 4* 📄 ${toSmallCaps('Video as Document')}
 *╰───────────────────⊷*
 
-> Powered by KHAN-MD`;
+> Powered by TIGER-MD`;
 
         const sent = await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
@@ -338,7 +338,7 @@ cmd({
                                             document: { url: audioUrl },
                                             mimetype: "audio/mpeg",
                                             fileName: `${vid.title}.mp3`,
-                                            caption: `📄 *${vid.title}*\n🎧 Audio Document\n\n> Powered by KHAN-MD`
+                                            caption: `📄 *${vid.title}*\n🎧 Audio Document\n\n> Powered by TIGER-MD`
                                         }, { quoted: received });
                                     } else {
                                         await conn.sendMessage(from, {
@@ -442,7 +442,7 @@ cmd({
 
         await conn.sendMessage(from, {
             image: { url: vid.thumbnail },
-            caption: `*🧸 CARTOON DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Cartoon...\n\n> Powered by KHAN-MD`
+            caption: `*🧸 CARTOON DOWNLOADER*\n\n🎞️ *Title:* ${vid.title}\n📺 *Channel:* ${vid.author?.name || 'Unknown'}\n🕒 *Duration:* ${vid.timestamp}\n\n*Status:* Downloading Cartoon...\n\n> Powered by TIGER-MD`
         }, { quoted: mek });
 
         let success = false;
@@ -508,7 +508,7 @@ async (conn, mek, m, { from, text, reply }) => {
         });
 
         mesaj += `*╭───⬡ ${toSmallCaps('Powered By')} ⬡───*\n`;
-        mesaj += `*┋ ⬡ ${toSmallCaps('KHAN-MD')}*\n`;
+        mesaj += `*┋ ⬡ ${toSmallCaps('TIGER-MD')}*\n`;
         mesaj += `*╰───────────────────⊷*`;
 
         await conn.sendMessage(from, { text: mesaj.trim() }, { quoted: mek });
