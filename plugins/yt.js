@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const API_BASE = "https://jawadtechyt.onrender.com";
+const API_BASE = "https://jawadtechhub.onrender.com";
 
 const toSmallCaps = (text) => {
     const map = {
