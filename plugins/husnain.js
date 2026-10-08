@@ -116,7 +116,7 @@ cmd({
 
     const randomShayari = sadGirlsShayari[Math.floor(Math.random() * sadGirlsShayari.length)];
     
-    const finalCaption = `『 SAD GIRLS SHAYARI 』\n\n${randomShayari}\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n*Powered by Love MD*`;
+    const finalCaption = `『 SAD GIRLS SHAYARI 』\n\n${randomShayari}\n\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n*Powered by Nobita-MD*`;
 
     return await reply(finalCaption);
 });
