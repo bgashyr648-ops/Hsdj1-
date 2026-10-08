@@ -29,7 +29,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => 
         let imageUrl = data.results[randomIndex].url;
         let artistName = data.results[randomIndex].artist_name || "Unknown";
 
-        let caption = `❤️‍🔥 *FULL ROMANTIC MOOD* ❤️‍🔥\n\n✨ *Pyar Mohabbat* ✨\n*Artist:* ${artistName}\n\n🤖 *Bot:* TIGER MD\n👑 *Owner:* BAGGA SHER MD`;
+        let caption = `❤️‍🔥 *FULL ROMANTIC MOOD* ❤️‍🔥\n\n✨ *Pyar Mohabbat* ✨\n*Artist:* ${artistName}\n\n🤖 *Bot:* Nobita-MD\n👑 *Owner:* Hamid Fida`;
 
         return await conn.sendMessage(from, { image: { url: imageUrl }, caption: caption }, { quoted: mek });
 
