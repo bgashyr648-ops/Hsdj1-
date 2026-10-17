@@ -93,7 +93,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, reply }) => 
         let randomIndex = Math.floor(Math.random() * data.data.length);
         let gifUrl = data.data[randomIndex].images.original.url;
 
-        let caption = `🎬 *RANDOM GIPHY* 🎬\n\n🤖 *Bot:* TIGER MD\n👑 *Owner:* BAGGA SHER MD`;
+        let caption = `🎬 *RANDOM GIPHY* 🎬\n\n🤖 *Bot:* Nobita-MD\n👑 *Owner:*Hamid-Fida`;
 
         return await conn.sendMessage(from, { video: { url: gifUrl }, gifPlayback: true, caption: caption }, { quoted: mek });
 
